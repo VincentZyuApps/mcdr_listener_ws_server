@@ -71,6 +71,9 @@ def on_player_joined(server: PluginServerInterface, player: str, info: Info):
 	"""
     server.tell(player, 'qwq!')
     server.say('qwq, nihao{}'.format(player))
+    
+    server.logger.info(f"player come:{player}")
+    
 
     player_logger.log_event(
         data={
@@ -93,6 +96,8 @@ def on_player_left(server: PluginServerInterface, player: str):
 	A player left the game, do some cleanup!
 	"""
     server.say('Bye {}'.format(player))
+    
+    server.logger.info(f"player leave:{player}")
     
     player_logger.log_event(
         data={

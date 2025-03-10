@@ -11,7 +11,7 @@ from mcdreforged.api.all import ServerInterface, new_thread
 from .log_utils import PlayerLogger, ServerStatusLogger
 
 class WebSocketHandler:
-    def __init__(self, server: ServerInterface, host: str = 'localhost', port: int = 8765):
+    def __init__(self, server: ServerInterface, host: str = '0.0.0.0', port: int = 8765):
         self.server = server
         self.host = host
         self.port = port
