@@ -1,0 +1,11 @@
+{
+	"id": "qwq_mcdr_plugin",
+	"version": "0.0.1-alpha",
+	"name": "qwq_mcdr_plugin",
+	"description": "监听服务器玩家进入退出事件，开启websocket服务器，可以用来对接bot，或者作为网页后端 等等。 websocket文档见README.md",
+	"author": "VincentZyu",
+	"link": "https://github.com/MCDReforged/MCDReforged-ExamplePlugin",
+	"dependencies": {
+		"mcdreforged": ">=2.0.0-alpha.1"
+	}
+}
