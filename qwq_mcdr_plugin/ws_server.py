@@ -38,56 +38,9 @@ class WebSocketHandler:
                     'command': data['command'],
                     'result': result
                 })
-            elif data.get('ask_type') in ['today_whole_log_json', 'today_come_rank_msg']:
-                await self.handle_log_request(data, websocket)
                 
         except Exception as e:
             self.server.logger.error(f"消息处理错误: {str(e)}")
-            
-    async def handle_log_request(self, data: dict, websocket):
-        response = {'request_id': data.get('request_id')}
-        try:
-            event_type = data['event_name']
-            date_str = data.get('date', datetime.now().strftime("%Y-%m%d"))
-            
-            if event_type == 'player_come_go':
-                logger = PlayerLogger(self.server)
-                logs = logger.load_logs(date_str)
-                
-                if data['ask_type'] == 'today_whole_log_json':
-                    response.update({
-                        'type': 'log_response',
-                        'status': 'success',
-                        'data': logs
-                    })
-                    
-                elif data['ask_type'] == 'today_come_rank_msg':
-                    ranked = self.calculate_ranking(logs)
-                    response.update({
-                        'type': 'rank_response',
-                        'status': 'success',
-                        'data': ranked
-                    })
-                    
-            await self.safe_send(websocket, response)
-            
-        except Exception as e:
-            response.update({
-                'status': 'error',
-                'message': str(e)
-            })
-            await self.safe_send(websocket, response)
-
-    def calculate_ranking(self, logs: list) -> list:
-        counter = defaultdict(int)
-        for entry in logs:
-            if entry['type'] == 'player_join':
-                counter[entry['player_name']] += 1
-                
-        return sorted(
-            [{'player_name': k, 'enter_times': v} for k, v in counter.items()],
-            key=lambda x: (-x['enter_times'], x['player_name'].lower())
-        )
 
     async def safe_send(self, websocket, data: dict):
         if not websocket.closed:
