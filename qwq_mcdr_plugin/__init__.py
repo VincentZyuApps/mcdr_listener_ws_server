@@ -37,11 +37,11 @@ def on_load(server: PluginServerInterface, old_module):
     ws_handler = ws_server.WebSocketHandler(server)
     ws_handler.start()
 
-    server.register_event_listener(
-        "mcdr.user_info",
-        on_user_info,
-        priority=500
-    )
+    # server.register_event_listener(
+    #     "mcdr.user_info",
+    #     on_user_info,
+    #     priority=500
+    # )
 
 
 def on_unload(server: PluginServerInterface):
