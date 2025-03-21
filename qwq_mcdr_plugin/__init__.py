@@ -2,7 +2,8 @@
 import re
 from mcdreforged.api.all import *
 
-from qwq_mcdr_plugin import qwq_lib, ws_server
+# from qwq_mcdr_plugin import qwq_lib, ws_server
+from . import qwq_lib, ws_server
 from .log_utils import PlayerLogger, ServerStatusLogger
 
 ws_handler = None
@@ -27,7 +28,7 @@ def on_load(server: PluginServerInterface, old_module):
     msg = f'This is the {counter} time to load the plugin'
     server.logger.info(msg)
     qwq_lib.register(server)
-    
+
     global player_logger, server_status_logger
     player_logger = PlayerLogger(server)
     # server_status_logger = ServerStatusLogger(server)
@@ -35,6 +36,12 @@ def on_load(server: PluginServerInterface, old_module):
     global ws_handler
     ws_handler = ws_server.WebSocketHandler(server)
     ws_handler.start()
+
+    server.register_event_listener(
+        "mcdr.user_info",
+        on_user_info,
+        priority=500
+    )
 
 
 def on_unload(server: PluginServerInterface):
@@ -58,12 +65,16 @@ def on_info(server: PluginServerInterface, info: Info):
 
 
 def on_user_info(server: PluginServerInterface, info: Info):
-    """
-	Reacting to user input
-	"""
-    if info.content == '!!example':
-        server.reply(info, 'example!!')
-
+    server.logger.info(f"info.content = {info.content}")
+    if ws_handler is None:
+        server.logger.info("ws_handler is none")
+    else:
+        if info.content.startswith("!!"):
+            ws_handler.broadcast({
+                'type': 'player_msg',
+                'player_name': info.player,
+                "content": info.content
+            })
 
 def on_player_joined(server: PluginServerInterface, player: str, info: Info):
     """
@@ -71,15 +82,14 @@ def on_player_joined(server: PluginServerInterface, player: str, info: Info):
 	"""
     server.tell(player, 'qwq!')
     server.say('qwq, nihao{}'.format(player))
-    
+
     server.logger.info(f"player come:{player}")
-    
 
     player_logger.log_event(
         data={
-        "type": "player_join",
-        "player_name": player
-    	}
+            "type": "player_join",
+            "player_name": player
+        }
     )
 
     if ws_handler is None:
@@ -96,14 +106,14 @@ def on_player_left(server: PluginServerInterface, player: str):
 	A player left the game, do some cleanup!
 	"""
     server.say('Bye {}'.format(player))
-    
+
     server.logger.info(f"player leave:{player}")
-    
+
     player_logger.log_event(
         data={
-        "type": "player_leave",
-        "player_name": player
-    	}
+            "type": "player_leave",
+            "player_name": player
+        }
     )
 
     if ws_handler is None:
@@ -151,3 +161,5 @@ def on_mcdr_stop(server: PluginServerInterface):
 	MCDR will wait until all on_mcdr_stop event call are finished before exiting
 	"""
     server.logger.info('See you next time~')
+
+
