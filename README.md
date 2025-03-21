@@ -1,28 +1,34 @@
-# MCDReforged WebSocket Server 🌐
+# mcdr_listener_ws_server 
 
-监听服务器玩家进入退出事件，开启websocket服务器，可以用来对接bot，或者作为网页后端 等等。。
+## 🌟简介
+监听mc事件，作为ws服务端🎮🌐
 
----
+ws库用的这个: https://websockets.readthedocs.io/en/15.0.1/
 
-## 🔌 快速连接信息
 
-### WebSocket 连接参数
-```yaml
-URL: ws://localhost:8765
-```
+## 📧WebSocket 消息格式：
 
-(todo) 后续可以在配置中修改url和port
-
-➡️ 玩家进入，mcdr ws服务端发送json：
+#### 玩家进入 🎉
 ```json
-{"type": "player_join", "player_name": "VincentZyu"}
+{
+    "type": "player_join",
+    "player_name": "some_name"
+}
 ```
 
-➡️ 玩家退出，mcdr ws服务端发送json：
+#### 玩家离开😢
 ```json
-{"type": "player_leave", "player_name": "VincentZyu"}
+{
+    "type": "player_leave",
+    "player_name": "some_name"
+}
 ```
 
-
-
-✨ 提示：建议搭配 Postman 或 WebSocket Client 工具进行调试！
+#### 玩家聊天💬
+```json
+{
+    "type": "player_join",
+    "player_name": "some_name",
+    "content": "some_content"
+}
+```
