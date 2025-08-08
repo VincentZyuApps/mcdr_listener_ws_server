@@ -10,6 +10,7 @@ ws_handler = None
 
 # variant for functionality demo
 counter = 0
+# player_count = 0
 
 player_logger = None
 server_status_logger = None
@@ -69,19 +70,18 @@ def on_user_info(server: PluginServerInterface, info: Info):
     if ws_handler is None:
         server.logger.info("ws_handler is none")
     else:
-        if info.content.startswith("!!"):
-            ws_handler.broadcast({
-                'type': 'player_msg',
-                'player_name': info.player,
-                "content": info.content
-            })
+        ws_handler.broadcast({
+            'type': 'player_msg',
+            'player_name': info.player,
+            "content": info.content
+        })
 
 def on_player_joined(server: PluginServerInterface, player: str, info: Info):
     """
 	A new player joined game, welcome!
 	"""
-    server.tell(player, 'qwq!')
-    server.say('qwq, nihao{}'.format(player))
+    # server.tell(player, 'qwq!')
+    # server.say('【mcdr_listener_ws_server】, 你好呀，{}！'.format(player))
 
     server.logger.info(f"player come:{player}")
 

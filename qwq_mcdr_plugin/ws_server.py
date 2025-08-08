@@ -11,7 +11,7 @@ from mcdreforged.api.all import ServerInterface, new_thread
 from .log_utils import PlayerLogger, ServerStatusLogger
 
 class WebSocketHandler:
-    def __init__(self, server: ServerInterface, host: str = '0.0.0.0', port: int = 8765):
+    def __init__(self, server: ServerInterface, host: str = '0.0.0.0', port: int = 8766):
         self.server = server
         self.host = host
         self.port = port
@@ -31,16 +31,50 @@ class WebSocketHandler:
     async def handle_message(self, message: str, websocket):
         try:
             data = json.loads(message)
-            if data.get('type') == 'command' and self.server.is_on_executor_thread():
+            msg_type = data.get('type')
+            
+            if msg_type == 'command' and self.server.is_on_executor_thread():
                 result = self.server.rcon_query(data['command'])
                 await self.safe_send(websocket, {
                     'type': 'command_result',
                     'command': data['command'],
                     'result': result
                 })
+            elif msg_type == 'group_to_server':
+                # 处理从QQ群转发到服务器的消息
+                nickname = data.get('nickname', '未知用户')
+                message_content = data.get('message', '')
+                group_id = data.get('group_id', '')
+                group_name = data.get('group_name', f'群{group_id}')
+                
+                # 使用Minecraft MOTD格式格式化消息
+                formatted_message = self.format_message_for_minecraft(
+                    group_id=group_id,
+                    group_name=group_name,
+                    nickname=nickname,
+                    message=message_content
+                )
+                
+                # 在服务器中广播消息
+                self.server.say(formatted_message)
+                self.server.logger.info(f"收到QQ群消息并转发到服务器: {formatted_message}")
                 
         except Exception as e:
             self.server.logger.error(f"消息处理错误: {str(e)}")
+
+    def format_message_for_minecraft(self, group_id: int, group_name: str, nickname: str, message: str) -> str:
+        """使用Minecraft MOTD格式格式化QQ群消息"""
+        # 使用不同颜色和格式区分不同部分
+        # §6 = 金色 (群名)
+        # §l = 粗体
+        # §b = 青色 (群号)
+        # §a = 绿色 (用户名)
+        # §o = 斜体
+        # §f = 白色 (消息内容)
+        # §r = 重置格式
+        
+        formatted_msg = f"§6§l[{group_name}]§r §b({group_id})§r §a§o{nickname}§r§f: {message}"
+        return formatted_msg
 
     async def safe_send(self, websocket, data: dict):
         if not websocket.closed:
