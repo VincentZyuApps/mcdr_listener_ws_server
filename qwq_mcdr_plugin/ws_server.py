@@ -11,12 +11,13 @@ from mcdreforged.api.all import ServerInterface, new_thread
 from .log_utils import PlayerLogger, ServerStatusLogger
 
 class WebSocketHandler:
-    def __init__(self, server: ServerInterface, host: str = '0.0.0.0', port: int = 8766):
+    def __init__(self, server: ServerInterface, image_handler=None, host: str = '0.0.0.0', port: int = 8766):
         self.server = server
         self.host = host
         self.port = port
         self.connections: Set[websockets.WebSocketServerProtocol] = set()
         self.ws_server: Optional[websockets.WebSocketServer] = None
+        self.image_handler = image_handler
 
     async def _handler(self, websocket):
         self.connections.add(websocket)
@@ -46,18 +47,32 @@ class WebSocketHandler:
                 message_content = data.get('message', '')
                 group_id = data.get('group_id', '')
                 group_name = data.get('group_name', f'群{group_id}')
+                images = data.get('images', [])  # 获取图片信息
                 
-                # 使用Minecraft MOTD格式格式化消息
-                formatted_message = self.format_message_for_minecraft(
-                    group_id=group_id,
-                    group_name=group_name,
-                    nickname=nickname,
-                    message=message_content
-                )
-                
-                # 在服务器中广播消息
-                self.server.say(formatted_message)
-                self.server.logger.info(f"收到QQ群消息并转发到服务器: {formatted_message}")
+                # 如果有图片，使用图片处理器处理消息
+                if images and self.image_handler:
+                    self.server.logger.info(f"收到包含 {len(images)} 张图片的消息")
+                    # 这里我们需要知道是哪个玩家，但websocket消息中没有玩家信息
+                    # 我们广播给所有在线玩家
+                    self.broadcast_message_with_images(
+                        group_id=group_id,
+                        group_name=group_name,
+                        nickname=nickname,
+                        message=message_content,
+                        images=images
+                    )
+                else:
+                    # 使用Minecraft MOTD格式格式化消息
+                    formatted_message = self.format_message_for_minecraft(
+                        group_id=group_id,
+                        group_name=group_name,
+                        nickname=nickname,
+                        message=message_content
+                    )
+                    
+                    # 在服务器中广播消息
+                    self.server.say(formatted_message)
+                    self.server.logger.info(f"收到QQ群消息并转发到服务器: {formatted_message}")
                 
         except Exception as e:
             self.server.logger.error(f"消息处理错误: {str(e)}")
@@ -96,6 +111,58 @@ class WebSocketHandler:
                 *[ws.send(message) for ws in list(self.connections)],
                 return_exceptions=True
             )
+    
+    def broadcast_message_with_images(self, group_id: str, group_name: str, nickname: str, message: str, images: list):
+        """
+        广播包含图片的消息给所有在线玩家
+        """
+        # 获取所有在线玩家
+        player_list = self.server.get_plugin_list() if hasattr(self.server, 'get_plugin_list') else []
+        
+        # 构造消息前缀
+        prefix = f"§6§l[{group_name}]§r §b({group_id})§r §a§o{nickname}§r§f: "
+        
+        # 获取所有在线玩家 - 使用MCDR API
+        # 注意：这里使用execute命令获取玩家列表
+        try:
+            # 为每个玩家处理图片标记
+            # 由于我们不能直接获取玩家列表，我们使用 @a 选择器
+            # 先注册图片信息到所有可能的玩家
+            
+            # 使用tellraw命令，通过@a发送给所有玩家
+            if self.image_handler and '<img:' in message:
+                # 处理图片标记（直接传递图片列表）
+                processed_msg = self.image_handler.replace_image_markers(message, images)
+                
+                # 构造完整的tellraw命令，包含前缀（SNBT格式）
+                # 转义双引号
+                prefix_escaped = prefix.replace('\\', '\\\\').replace('"', '\\"')
+                full_message = f'["",{{text:"{prefix_escaped}"}},{processed_msg}]'
+                tellraw_command = f'tellraw @a {full_message}'
+                
+                self.server.execute(tellraw_command)
+                self.server.logger.info(f"已发送包含图片的消息到所有玩家")
+            else:
+                # 没有图片处理器，使用普通格式
+                formatted_message = self.format_message_for_minecraft(
+                    group_id=group_id,
+                    group_name=group_name,
+                    nickname=nickname,
+                    message=message
+                )
+                self.server.say(formatted_message)
+                
+        except Exception as e:
+            self.server.logger.error(f"广播包含图片的消息失败: {e}")
+            # 回退到普通消息
+            formatted_message = self.format_message_for_minecraft(
+                group_id=group_id,
+                group_name=group_name,
+                nickname=nickname,
+                message=message
+            )
+            self.server.say(formatted_message)
+
 
     @new_thread
     def start(self):

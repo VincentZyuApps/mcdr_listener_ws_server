@@ -1,11 +1,14 @@
 {
-	"id": "qwq_mcdr_plugin",
-	"version": "0.1.0-rc1",
-	"name": "qwq_mcdr_plugin",
-	"description": "监听服务器玩家进入退出事件，开启websocket服务器，可以用来对接bot，或者作为网页后端 等等。 websocket文档见README.md",
+	"id": "mcdr_listener_ws_server",
+	"version": "0.3.0-beta1",
+	"name": "mcdr_listener_ws_server",
+	"description": "监听服务器玩家进入退出事件，开启websocket服务器，可以用来对接bot，或者作为网页后端 等等。 websocket文档见README.md。需要安装 websockets>=15.0.0",
 	"author": "VincentZyu",
-	"link": "https://github.com/MCDReforged/MCDReforged-ExamplePlugin",
+	"link": "https://gitee.com/vincent-zyu/mcdr_listener_ws_server",
 	"dependencies": {
 		"mcdreforged": ">=2.0.0-alpha.1"
-	}
+	},
+	"requirements": [
+		"websockets>=15.0.0"
+	]
 }

@@ -5,8 +5,10 @@ from mcdreforged.api.all import *
 # from qwq_mcdr_plugin import qwq_lib, ws_server
 from . import qwq_lib, ws_server
 from .log_utils import PlayerLogger, ServerStatusLogger
+from .image_handler import ImageHandler
 
 ws_handler = None
+image_handler = None
 
 # variant for functionality demo
 counter = 0
@@ -30,13 +32,25 @@ def on_load(server: PluginServerInterface, old_module):
     server.logger.info(msg)
     qwq_lib.register(server)
 
-    global player_logger, server_status_logger
+    global player_logger, server_status_logger, image_handler
     player_logger = PlayerLogger(server)
     # server_status_logger = ServerStatusLogger(server)
+    
+    # 初始化图片处理器
+    image_handler = ImageHandler(server)
 
     global ws_handler
-    ws_handler = ws_server.WebSocketHandler(server)
+    ws_handler = ws_server.WebSocketHandler(server, image_handler)
     ws_handler.start()
+    
+    # 注册图片查看命令（接收URL参数）
+    server.register_command(
+        Literal('!!view_image')
+        .then(
+            GreedyText('url')
+            .runs(lambda src, ctx: handle_view_image(server, src, ctx['url']))
+        )
+    )
 
     # server.register_event_listener(
     #     "mcdr.user_info",
@@ -161,5 +175,20 @@ def on_mcdr_stop(server: PluginServerInterface):
 	MCDR will wait until all on_mcdr_stop event call are finished before exiting
 	"""
     server.logger.info('See you next time~')
+
+
+def handle_view_image(server: PluginServerInterface, source: CommandSource, url: str):
+    """处理查看图片命令"""
+    if not source.is_player:
+        source.reply('§c此命令只能由玩家执行')
+        return
+    
+    player_name = source.player
+    server.logger.info(f'[handle_view_image] 玩家 {player_name} 请求查看图片: {url[:100]}...')
+    
+    if image_handler:
+        image_handler.view_image(player_name, url)
+    else:
+        source.reply('§c图片处理器未初始化')
 
 
