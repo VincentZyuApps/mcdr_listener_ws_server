@@ -119,8 +119,18 @@ class WebSocketHandler:
         # 获取所有在线玩家
         player_list = self.server.get_plugin_list() if hasattr(self.server, 'get_plugin_list') else []
         
-        # 构造消息前缀
-        prefix = f"§6§l[{group_name}]§r §b({group_id})§r §a§o{nickname}§r§f: "
+        # 构造消息前缀（使用JSON文本组件格式，而不是§颜色代码）
+        # § 字符在tellraw的SNBT中不允许出现
+        prefix_components = [
+            {"text": "[", "color": "gold", "bold": True},
+            {"text": group_name, "color": "gold", "bold": True},
+            {"text": "] ", "color": "gold", "bold": True},
+            {"text": "(", "color": "aqua"},
+            {"text": group_id, "color": "aqua"},
+            {"text": ") ", "color": "aqua"},
+            {"text": nickname, "color": "green", "italic": True},
+            {"text": ": ", "color": "white"}
+        ]
         
         # 获取所有在线玩家 - 使用MCDR API
         # 注意：这里使用execute命令获取玩家列表
@@ -134,10 +144,13 @@ class WebSocketHandler:
                 # 处理图片标记（直接传递图片列表）
                 processed_msg = self.image_handler.replace_image_markers(message, images)
                 
-                # 构造完整的tellraw命令，包含前缀（SNBT格式）
-                # 转义双引号
-                prefix_escaped = prefix.replace('\\', '\\\\').replace('"', '\\"')
-                full_message = f'["",{{text:"{prefix_escaped}"}},{processed_msg}]'
+                # 构造完整的tellraw命令（使用组件数组）
+                import json
+                prefix_json = json.dumps(prefix_components, ensure_ascii=False, separators=(',', ':'))
+                # 移除外层的[]，因为我们要合并到一个大数组中
+                prefix_json_inner = prefix_json[1:-1]  # 去掉 [ ]
+                
+                full_message = f'[""' + (f',{prefix_json_inner},' if prefix_json_inner else ',') + f'{processed_msg}]'
                 tellraw_command = f'tellraw @a {full_message}'
                 
                 self.server.execute(tellraw_command)
