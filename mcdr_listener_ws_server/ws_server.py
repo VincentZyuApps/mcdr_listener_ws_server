@@ -119,6 +119,19 @@ class WebSocketHandler:
         # 获取所有在线玩家
         player_list = self.server.get_plugin_list() if hasattr(self.server, 'get_plugin_list') else []
         
+        # 清理群名和昵称中的特殊字符（换行、制表符、§等）
+        def sanitize_text(text: str) -> str:
+            text = text.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ')
+            text = text.replace('\t', ' ')
+            text = text.replace('§', '')
+            text = ''.join(c if (ord(c) >= 0x20 and ord(c) != 0x7F) else ' ' for c in text)
+            import re
+            text = re.sub(r' +', ' ', text)
+            return text.strip()
+        
+        group_name = sanitize_text(group_name)
+        nickname = sanitize_text(nickname)
+        
         # 构造消息前缀（使用JSON文本组件格式，而不是§颜色代码）
         # § 字符在tellraw的SNBT中不允许出现
         prefix_components = [

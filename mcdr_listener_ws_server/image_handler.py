@@ -105,6 +105,30 @@ class ImageHandler:
         
         return snbt_text
     
+    def _sanitize_for_tellraw(self, text: str) -> str:
+        """
+        清理文本，移除/转义 tellraw 不允许的字符
+        
+        Minecraft tellraw 不允许以下字符：
+        - § (分节符)
+        - 换行符 \n \r
+        - 制表符 \t
+        - 其他控制字符 (< 0x20)
+        - DEL字符 (0x7F)
+        """
+        # 替换换行符为空格（保留可读性）
+        text = text.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ')
+        # 替换制表符为空格
+        text = text.replace('\t', ' ')
+        # 移除 § 颜色代码
+        text = text.replace('§', '')
+        # 移除其他控制字符 (< 0x20 和 0x7F)
+        text = ''.join(c if (ord(c) >= 0x20 and ord(c) != 0x7F) else ' ' for c in text)
+        # 压缩多个连续空格为单个空格
+        import re as regex
+        text = regex.sub(r' +', ' ', text)
+        return text.strip()
+    
     def replace_image_markers(self, message: str, images: list) -> str:
         """
         替换消息中的 <img:X> 标记为可点击文本
@@ -115,6 +139,9 @@ class ImageHandler:
             
         注意：这个方法返回的是用于tellraw命令的SNBT数组格式
         """
+        # 首先清理消息中的特殊字符
+        message = self._sanitize_for_tellraw(message)
+        
         if not images:
             message_escaped = message.replace('\\', '\\\\').replace('"', '\\"')
             return f'{{text:"{message_escaped}"}}'
@@ -132,7 +159,8 @@ class ImageHandler:
             if match.start() > last_end:
                 text_before = message[last_end:match.start()]
                 if text_before:
-                    # SNBT格式：转义双引号
+                    # SNBT格式：转义双引号，并清理特殊字符
+                    text_before = self._sanitize_for_tellraw(text_before)
                     text_before = text_before.replace('\\', '\\\\').replace('"', '\\"')
                     parts.append(f'{{text:"{text_before}"}}')
             
@@ -155,6 +183,7 @@ class ImageHandler:
         if last_end < len(message):
             text_after = message[last_end:]
             if text_after:
+                text_after = self._sanitize_for_tellraw(text_after)
                 text_after = text_after.replace('\\', '\\\\').replace('"', '\\"')
                 parts.append(f'{{text:"{text_after}"}}')
         

@@ -1,6 +1,6 @@
 {
 	"id": "mcdr_listener_ws_server",
-	"version": "0.3.0-beta1",
+	"version": "0.3.0-beta3",
 	"name": "mcdr_listener_ws_server",
 	"description": "监听服务器玩家进入退出事件，开启websocket服务器，可以用来对接bot，或者作为网页后端 等等。 websocket文档见README.md。需要安装 websockets>=15.0.0",
 	"author": "VincentZyu",
