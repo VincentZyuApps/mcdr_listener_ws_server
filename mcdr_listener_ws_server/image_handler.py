@@ -110,7 +110,6 @@ class ImageHandler:
         清理文本，移除/转义 tellraw 不允许的字符
         
         Minecraft tellraw 不允许以下字符：
-        - § (分节符)
         - 换行符 \n \r
         - 制表符 \t
         - 其他控制字符 (< 0x20)
@@ -120,9 +119,7 @@ class ImageHandler:
         text = text.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ')
         # 替换制表符为空格
         text = text.replace('\t', ' ')
-        # 移除 § 颜色代码
-        text = text.replace('§', '')
-        # 移除其他控制字符 (< 0x20 和 0x7F)
+        # 移除其他控制字符 (< 0x20 和 0x7F)，但保留 § (0xA7)
         text = ''.join(c if (ord(c) >= 0x20 and ord(c) != 0x7F) else ' ' for c in text)
         # 压缩多个连续空格为单个空格
         import re as regex
