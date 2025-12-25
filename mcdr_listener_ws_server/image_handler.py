@@ -359,7 +359,8 @@ class ImageHandler:
                     color = color - 0x100000000
                 
                 # 计算相对位置（增加间距避免重叠）
-                rel_x = px * spacing_x - offset_x
+                # X轴翻转：因为^x正方向是玩家左边，所以需要翻转
+                rel_x = (width - px - 1) * spacing_x - offset_x
                 rel_y = (height - py - 1) * spacing_y - offset_y  # Y轴翻转
                 
                 # 生成text_display实体
