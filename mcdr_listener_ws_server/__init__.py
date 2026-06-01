@@ -45,6 +45,7 @@ def on_load(server: PluginServerInterface, old_module):
         cache_dir=plugin_config.cache_dir,
         image_max_side_length=plugin_config.image_max_side_length,
         image_duration_sec=plugin_config.image_duration_sec,
+        image_cache_ttl_sec=plugin_config.image_cache_ttl_sec,
         image_host_whitelist=plugin_config.image_host_whitelist,
     )
 

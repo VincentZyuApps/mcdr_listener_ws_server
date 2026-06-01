@@ -1,5 +1,6 @@
 import hashlib
 import os
+import time
 from urllib.parse import urlparse
 
 import requests
@@ -7,14 +8,39 @@ from mcdreforged.api.all import PluginServerInterface
 
 
 class ImageCache:
-    def __init__(self, server: PluginServerInterface, cache_dir: str, host_whitelist: list[str] | None = None):
+    def __init__(
+        self,
+        server: PluginServerInterface,
+        cache_dir: str,
+        ttl_sec: int = 180,
+        host_whitelist: list[str] | None = None,
+    ):
         self.server = server
         self.cache_dir = cache_dir
+        self.ttl_sec = ttl_sec
         self.host_whitelist = {host.lower() for host in (host_whitelist or [])}
 
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
             server.logger.info(f'【 Image cache 】 created cache directory: {cache_dir}')
+
+    def cleanup_expired(self) -> None:
+        if self.ttl_sec <= 0 or not os.path.isdir(self.cache_dir):
+            return
+
+        now = time.time()
+        removed = 0
+        for entry in os.scandir(self.cache_dir):
+            if not entry.is_file():
+                continue
+            try:
+                if now - entry.stat().st_mtime > self.ttl_sec:
+                    os.remove(entry.path)
+                    removed += 1
+            except OSError as error:
+                self.server.logger.warning(f'【 Image cache 】 failed to remove expired cache file {entry.path}: {error}')
+        if removed > 0:
+            self.server.logger.info(f'【 Image cache 】 removed {removed} expired cache file(s)')
 
     def is_url_allowed(self, url: str) -> bool:
         parsed = urlparse(url)
@@ -26,6 +52,8 @@ class ImageCache:
     def download_image(self, url: str, timeout: int = 10) -> bytes:
         if not self.is_url_allowed(url):
             raise ValueError(f'Image host is not in whitelist: {urlparse(url).hostname}')
+
+        self.cleanup_expired()
 
         cache_key = hashlib.md5(url.encode()).hexdigest()
         cache_path = os.path.join(self.cache_dir, f'{cache_key}.jpg')

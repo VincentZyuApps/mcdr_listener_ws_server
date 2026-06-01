@@ -46,8 +46,10 @@ Supports select Minecraft Java server distributions managed by MCDReforged.
 
 Place the plugin in MCDR's plugin directory and ensure dependencies are installed:
 
-- `mcdreforged >= 2.0.0-alpha.1`
+- `mcdreforged >= 2.13.0`
 - `websockets >= 15.0.0`
+- `Pillow >= 10.0.0`
+- `requests >= 2.32.0`
 
 ```powershell
 uv pip install mcdreforged
@@ -58,25 +60,35 @@ uv pip install -r requirements.txt
 
 ## Configuration
 
-Auto-generated at `config/mcdr_listener_ws_server/config.json` on first load:
+Auto-generated from the bundled `resources/` template at `config/mcdr_listener_ws_server/config.yml` on first load:
+
+> The plugin supports i18n — player-facing messages can be customized in the `lang/` directory (`zh_cn.yml` / `en_us.yml`).
 
 | Key | Description | Default |
 |-----|-------------|---------|
-| `host` | WebSocket listen address | `0.0.0.0` |
-| `port` | WebSocket listen port | `60601` |
-| `cache_dir` | Image cache directory | `./image_cache` |
-| `image_max_side_length` | Max side length of displayed images | `64` |
-| `image_duration_sec` | Image display duration (seconds) | `10` |
-| `image_host_whitelist` | Allowed image URL hosts | `multimedia.nt.qq.com.cn`, `gxh.vip.qq.com` |
+| `host` | 🌐 WebSocket listen address | `0.0.0.0` |
+| `port` | 🔌 WebSocket listen port | `60601` |
+| `cache_dir` | 📂 Image cache directory | `./cache/mcdr_listener_ws_server/images/` |
+| `image_max_side_length` | 📐 Max side length of displayed images | `64` |
+| `image_duration_sec` | ⏱️ Image display duration (seconds) | `10` |
+| `image_cache_ttl_sec` | 🧹 Image cache retention time (seconds) | `180` |
+| `image_host_whitelist` | 🛡️ Allowed image URL hosts | `multimedia.nt.qq.com.cn`, `gxh.vip.qq.com` |
 
-> `127.0.0.1` can be added to the whitelist in code for local testing (run a WS client locally to simulate a chat platform).
+> For local testing (run a WS client locally to simulate a chat platform), add `127.0.0.1` to `image_host_whitelist` in the generated config file `config/mcdr_listener_ws_server/config.yml`:
+> ```yaml
+> image_host_whitelist:
+>   - multimedia.nt.qq.com.cn
+>   - gxh.vip.qq.com
+>   - 127.0.0.1
+> ```
 
 ## Commands
 
 ### `!!view_image <url>`
 
 Renders a remote image as a `text_display` entity in front of the player.  
-Requires: executed by a player + image host in the whitelist.
+Requires: executed by a player + image host in the whitelist.  
+Feedback text is loaded from `lang/` language files and can be customized.
 
 ## WebSocket Event Format
 
@@ -110,7 +122,45 @@ Requires: executed by a player + image host in the whitelist.
 }
 ```
 
-## Related Repositories
+### Client Inbound Events
 
-- Plugin: [Gitee](https://gitee.com/vincent-zyu/mcdr_listener_ws_server)
-- MCDReforged: [GitHub](https://github.com/MCDReforged/MCDReforged)
+Send the following JSON messages from the client to the server.
+
+#### Platform Message Forwarding 📨
+
+```json
+{
+    "type": "group_to_server",
+    "nickname": "username",
+    "message": "message content",
+    "group_id": "123456",
+    "group_name": "group name",
+    "images": [
+        {
+            "url": "https://example.com/image.png",
+            "name": "image.png"
+        }
+    ]
+}
+```
+
+`images` field is optional. When present, images will be rendered as `text_display` entities in-game.
+
+#### Remote Command Execution 🖥️
+
+```json
+{
+    "type": "command",
+    "command": "list"
+}
+```
+
+The server will respond with the execution result:
+
+```json
+{
+    "type": "command_result",
+    "command": "list",
+    "result": "..."
+}
+```

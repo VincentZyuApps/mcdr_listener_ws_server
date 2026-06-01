@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Dict, Any
 from mcdreforged.api.all import ServerInterface
 
+
 class EventLogger:
     def __init__(self, server: ServerInterface, event_type: str, filename_pattern: str):
         """
@@ -17,22 +18,14 @@ class EventLogger:
         self.event_type = event_type
         self.filename_pattern = filename_pattern
 
-
     def _get_log_path(self) -> Path:
         """生成当日日志路径"""
         today = datetime.now().strftime("%Y-%m%d")
-        return (
-            Path(__file__).parent.parent / 
-            "loggings" / 
-            today / 
-            self.event_type
-        )
+        return Path(__file__).parent.parent / "logs" / today / self.event_type
 
     def _get_filename(self) -> str:
         """生成带日期的文件名"""
-        return self.filename_pattern.format(
-            date=datetime.now().strftime("%Y-%m%d")
-        )
+        return self.filename_pattern.format(date=datetime.now().strftime("%Y-%m%d"))
 
     def log_event(self, data: Dict[str, Any]) -> None:
         """记录事件的核心方法"""
@@ -61,35 +54,36 @@ class EventLogger:
 
         except Exception as e:
             self.server.logger.error(f"日志记录失败: {str(e)}")
-            
+
     @classmethod
     def parse_date_str(cls, date_str: str) -> datetime:
         try:
             return datetime.strptime(date_str, "%Y-%m-%d")
         except ValueError:
             raise ValueError("错误的格式。日期格式应该为: YYYY-MM-DD")
-    
+
     def load_logs(self, date_str: str) -> list:
         try:
             date_obj = self.parse_date_str(date_str)
             log_path = (
-                Path(__file__).parent.parent / 
-                "loggings" / 
-                date_obj.strftime("%Y-%m%d") / 
-                self.event_type
+                Path(__file__).parent.parent
+                / "logs"
+                / date_obj.strftime("%Y-%m%d")
+                / self.event_type
             )
             file_name = self.filename_pattern.format(date=date_str)
             log_file = log_path / file_name
-            
+
             if not log_file.exists():
                 return []
-            
+
             with open(log_file, "r", encoding="utf-8") as f:
                 return json.load(f)
-            
+
         except Exception as e:
             self.server.logger.error(f"日志读取失败: {str(e)}")
             raise
+
 
 # 预定义常用日志类型
 class PlayerLogger(EventLogger):
@@ -97,13 +91,14 @@ class PlayerLogger(EventLogger):
         super().__init__(
             server=server,
             event_type="player_come_go",
-            filename_pattern="player_come_and_go_{date}.json"
+            filename_pattern="player_come_and_go_{date}.json",
         )
+
 
 class ServerStatusLogger(EventLogger):
     def __init__(self, server: ServerInterface):
         super().__init__(
             server=server,
             event_type="server_on_off",
-            filename_pattern="server_on_off_{date}.json"
+            filename_pattern="server_on_off_{date}.json",
         )

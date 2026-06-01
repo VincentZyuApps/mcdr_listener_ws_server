@@ -46,8 +46,10 @@
 
 将插件放入 MCDR 插件目录，确保依赖已安装：
 
-- `mcdreforged >= 2.0.0-alpha.1`
+- `mcdreforged >= 2.13.0`
 - `websockets >= 15.0.0`
+- `Pillow >= 10.0.0`
+- `requests >= 2.32.0`
 
 ```powershell
 uv pip install mcdreforged
@@ -58,25 +60,35 @@ uv pip install -r requirements.txt
 
 ## 配置
 
-首次加载后自动生成 `config/mcdr_listener_ws_server/config.json`，主要选项：
+首次加载后自动从 `resources/` 释放默认配置模板到 `config/mcdr_listener_ws_server/config.yml`，主要选项：
+
+> 插件支持国际化（i18n），玩家可见消息文本可在 `lang/` 目录下按需修改（`zh_cn.yml` / `en_us.yml`）。
 
 | 配置项 | 说明 | 默认值 |
 |--------|------|--------|
-| `host` | 监听地址 | `0.0.0.0` |
-| `port` | 监听端口 | `60601` |
-| `cache_dir` | 图片缓存目录 | `./image_cache` |
-| `image_max_side_length` | 图片最大边长 | `64` |
-| `image_duration_sec` | 图片展示时长 | `10` |
-| `image_host_whitelist` | 图片域名白名单 | `multimedia.nt.qq.com.cn`, `gxh.vip.qq.com` |
+| `host` | 🌐 监听地址 | `0.0.0.0` |
+| `port` | 🔌 监听端口 | `60601` |
+| `cache_dir` | 📂 图片缓存目录 | `./cache/mcdr_listener_ws_server/images/` |
+| `image_max_side_length` | 📐 图片最大边长 | `64` |
+| `image_duration_sec` | ⏱️ 图片展示时长 | `10` |
+| `image_cache_ttl_sec` | 🧹 图片缓存保留时长（秒） | `180` |
+| `image_host_whitelist` | 🛡️ 图片域名白名单 | `multimedia.nt.qq.com.cn`, `gxh.vip.qq.com` |
 
-> `127.0.0.1` 可在代码中手动加入白名单，用于本地测试(本地开启一个ws客户端，模拟聊天平台接入)。
+> 如需本地测试（本地起一个 WS 客户端模拟聊天平台接入），可在生成的配置文件 `config/mcdr_listener_ws_server/config.yml` 中将 `127.0.0.1` 加入 `image_host_whitelist`：
+> ```yaml
+> image_host_whitelist:
+>   - multimedia.nt.qq.com.cn
+>   - gxh.vip.qq.com
+>   - 127.0.0.1
+> ```
 
 ## 命令
 
 ### `!!view_image <url>`
 
 玩家执行后在面前以 `text_display` 展示远程图片。  
-需满足：由玩家执行 + 图片域名在白名单内。
+需满足：由玩家执行 + 图片域名在白名单内。  
+命令反馈文本从 `lang/` 语言文件读取，支持自定义。
 
 ## WebSocket 事件格式
 
@@ -110,7 +122,45 @@ uv pip install -r requirements.txt
 }
 ```
 
-## 相关仓库
+### 客户端入站事件
 
-- 插件：[Gitee](https://gitee.com/vincent-zyu/mcdr_listener_ws_server)
-- MCDReforged：[GitHub](https://github.com/MCDReforged/MCDReforged)
+客户端向服务端发送以下 JSON 消息。
+
+#### 平台消息转发 📨
+
+```json
+{
+    "type": "group_to_server",
+    "nickname": "用户名",
+    "message": "消息内容",
+    "group_id": "123456",
+    "group_name": "群名称",
+    "images": [
+        {
+            "url": "https://example.com/image.png",
+            "name": "image.png"
+        }
+    ]
+}
+```
+
+`images` 字段可选，携带时会在游戏内以 `text_display` 实体渲染展示图片。
+
+#### 远程命令执行 🖥️
+
+```json
+{
+    "type": "command",
+    "command": "list"
+}
+```
+
+服务端执行后将返回结果：
+
+```json
+{
+    "type": "command_result",
+    "command": "list",
+    "result": "..."
+}
+```

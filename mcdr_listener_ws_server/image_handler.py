@@ -14,17 +14,24 @@ class ImageHandler:
     def __init__(
         self,
         server: PluginServerInterface,
-        cache_dir='./image_cache',
+        cache_dir='./cache/mcdr_listener_ws_server/images/',
         image_max_side_length: int = 64,
         image_duration_sec: int = 10,
+        image_cache_ttl_sec: int = 180,
         image_host_whitelist: list[str] | None = None,
     ):
         self.server = server
         self.cache_dir = cache_dir
         self.image_max_side_length = image_max_side_length
         self.image_duration_sec = image_duration_sec
+        self.image_cache_ttl_sec = image_cache_ttl_sec
         self.pending_images = {}  # {player_name: {idx: image_data}}
-        self.image_cache = ImageCache(server, cache_dir, host_whitelist=image_host_whitelist)
+        self.image_cache = ImageCache(
+            server,
+            cache_dir,
+            ttl_sec=image_cache_ttl_sec,
+            host_whitelist=image_host_whitelist,
+        )
         self.image_renderer = ImageRenderer(server, image_max_side_length=image_max_side_length, image_duration_sec=image_duration_sec)
 
     def _make_image_blocked_message(self, host: str) -> RTextBase:

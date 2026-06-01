@@ -1,0 +1,29 @@
+# mcdr_listener_ws_server 默认配置
+
+# 🌐 WebSocket 监听地址
+host: 0.0.0.0
+
+# 🔌 WebSocket 监听端口
+port: 60601
+
+# 📂 图片缓存目录
+# 可写相对路径，也可写绝对路径
+cache_dir: ./cache/mcdr_listener_ws_server/images/
+
+# 📐 图片在游戏内渲染时的最大边长
+image_max_side_length: 64
+
+# ⏱️ 图片在游戏内展示多久
+# 单位：秒
+image_duration_sec: 10
+
+# 🧹 图片缓存文件保留多久
+# 单位：秒
+image_cache_ttl_sec: 180
+
+# 🛡️ 允许下载图片的域名白名单
+# 只有这里列出的 host 才能被下载和展示
+image_host_whitelist:
+  - multimedia.nt.qq.com.cn
+  - gxh.vip.qq.com
+  # - 127.0.0.1
