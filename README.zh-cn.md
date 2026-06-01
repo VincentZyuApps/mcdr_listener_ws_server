@@ -1,12 +1,29 @@
 # mcdr_listener_ws_server
 
-聊天平台（QQ / Kook / Discord / Telegram）⇄ Minecraft 服务器（MCDReforged）的群服互通插件。
+[![MCDR](https://img.shields.io/badge/for-MCDReforged%202-fac00f?style=for-the-badge&labelColor=3876a9)](https://mcdreforged.com/zh-CN)
+
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/VincentZyuApps/mcdr_listener_ws_server)
+[![Gitee](https://img.shields.io/badge/Gitee-C71D23?style=for-the-badge&logo=gitee&logoColor=white)](https://gitee.com/vincent-zyu/mcdr_listener_ws_server)
+
+[![QQ群](https://img.shields.io/badge/QQ群-1085190201-12B7F5?style=flat-square&logo=qq&logoColor=white)](https://qm.qq.com/q/ZN7fxZ3qCq)
+
+<p><del>💬 插件使用问题 / 🐛 Bug反馈 / 👨‍💻 插件开发交流，欢迎加入QQ群：<b>259248174</b>   🎉（这个群G了</del> </p> 
+<p>💬 插件使用问题 / 🐛 Bug反馈 / 👨‍💻 插件开发交流，欢迎加入QQ群：<b>1085190201</b> 🎉</p>
+<p>💡 在群里直接艾特我，回复的更快哦~ ✨</p>
+
+---
+
+聊天平台 **图文消息** ⇄ Minecraft Java服务器 **文字消息与进出服事件** 的群服互通插件。
+
+支持 Koishi Bot 接入，Koishi 支持的聊天平台均可使用（已实测 QQ OneBot v11 / Kook / Discord / Telegram）。
+
+支持 MCDReforged 托管的任何 Minecraft Java 服务器（测试环境：Spigot / Paper 1.21.8）。
 
 ### 它能做什么
 
 **→ 聊天平台 → MC 服务器**
 - 文字消息转发到游戏内
-- 图片消息渲染为游戏内 `text_display`（已实测使用koishi插件对接OneBotv11平台，其他的不知道）
+- 图片消息渲染为游戏内 `text_display`（已实测 OneBot v11）
 
 **→ MC 服务器 → 聊天平台**
 - 玩家聊天消息转发到平台
@@ -50,6 +67,38 @@ uv pip install -r requirements.txt
 
 玩家执行后在面前以 `text_display` 展示远程图片。  
 需满足：由玩家执行 + 图片域名在白名单内。
+
+## WebSocket 事件格式
+
+### 服务端广播事件
+
+#### 玩家进入 🎉
+
+```json
+{
+    "type": "player_join",
+    "player_name": "some_name"
+}
+```
+
+#### 玩家离开 😢
+
+```json
+{
+    "type": "player_leave",
+    "player_name": "some_name"
+}
+```
+
+#### 玩家聊天 💬
+
+```json
+{
+    "type": "player_chat",
+    "player_name": "some_name",
+    "content": "some_content"
+}
+```
 
 ## 相关仓库
 
