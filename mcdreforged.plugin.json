@@ -1,8 +1,8 @@
 {
 	"id": "mcdr_listener_ws_server",
-	"version": "0.3.0-beta5",
+	"version": "0.4.0-beta.5+20260601",
 	"name": "mcdr_listener_ws_server",
-	"description": "监听服务器玩家进入退出事件，开启websocket服务器，可以用来对接bot，或者作为网页后端 等等。 websocket文档见README.md。需要安装 websockets>=15.0.0",
+	"description": "🌐🎮💬⚙️📡 MCDR 群服互通 WebSocket 服务端插件，监听服务器玩家事件并提供 WebSocket 服务，用于对接聊天平台客户端插件、Bot 或网页后端，实现双向消息转发、事件广播与图片消息扩展支持。",
 	"author": "VincentZyu",
 	"link": "https://gitee.com/vincent-zyu/mcdr_listener_ws_server",
 	"dependencies": {
@@ -10,5 +10,8 @@
 	},
 	"requirements": [
 		"websockets>=15.0.0"
+	],
+	"resources": [
+		"lang"
 	]
 }

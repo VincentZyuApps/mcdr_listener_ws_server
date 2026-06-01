@@ -1,0 +1,20 @@
+mcdr_listener_ws_server:
+  help:
+    view_image: "查看一张远程图片"
+  command:
+    player_only: "此命令只能由玩家执行"
+    image_handler_not_initialized: "图片处理器未初始化"
+  player:
+    leave_broadcast: "Bye {player}"
+  image:
+    entry_label: "[图片:{idx}]"
+    entry_label_plain: "[图片:{idx}]"
+    click_hint: "点击查看图片"
+    url_label: "URL: "
+    blocked_by_whitelist_prefix: "图片被白名单拦截："
+    loading: "正在加载图片..."
+    download_failed: "图片下载失败"
+    gif_first_frame: "检测到 GIF 动图，将显示第一帧"
+    process_failed: "图片处理失败: {error}"
+    rendering: "正在生成图片 ({width}x{height} = {pixel_count}像素)..."
+    rendered: "图片已展示（{duration_sec}秒后消失）"

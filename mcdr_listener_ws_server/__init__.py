@@ -1,9 +1,12 @@
-# __init__.py
-import re
 from mcdreforged.api.all import *
 
-# from qwq_mcdr_plugin import qwq_lib, ws_server
-from . import qwq_lib, ws_server
+from . import ws_server
+from .commands import register_commands, register_help_messages
+from .config import load_config
+from .events import on_info as handle_info_event
+from .events import on_player_joined as handle_player_joined_event
+from .events import on_player_left as handle_player_left_event
+from .events import on_user_info as handle_user_info_event
 from .log_utils import PlayerLogger, ServerStatusLogger
 from .image_handler import ImageHandler
 
@@ -14,6 +17,7 @@ image_handler = None
 counter = 0
 # player_count = 0
 
+plugin_config = None
 player_logger = None
 server_status_logger = None
 
@@ -28,29 +32,33 @@ def on_load(server: PluginServerInterface, old_module):
         counter = old_module.counter + 1
     else:
         counter = 1
-    msg = f'This is the {counter} time to load the plugin'
+    msg = f'【 Plugin loaded 】 count = {counter}'
     server.logger.info(msg)
-    qwq_lib.register(server)
 
-    global player_logger, server_status_logger, image_handler
+    global plugin_config, player_logger, server_status_logger, image_handler
+    plugin_config = load_config(server)
     player_logger = PlayerLogger(server)
     # server_status_logger = ServerStatusLogger(server)
     
-    # 初始化图片处理器
-    image_handler = ImageHandler(server)
+    image_handler = ImageHandler(
+        server,
+        cache_dir=plugin_config.cache_dir,
+        image_max_side_length=plugin_config.image_max_side_length,
+        image_duration_sec=plugin_config.image_duration_sec,
+        image_host_whitelist=plugin_config.image_host_whitelist,
+    )
 
     global ws_handler
-    ws_handler = ws_server.WebSocketHandler(server, image_handler)
-    ws_handler.start()
-    
-    # 注册图片查看命令（接收URL参数）
-    server.register_command(
-        Literal('!!view_image')
-        .then(
-            GreedyText('url')
-            .runs(lambda src, ctx: handle_view_image(server, src, ctx['url']))
-        )
+    ws_handler = ws_server.WebSocketHandler(
+        server,
+        image_handler,
+        host=plugin_config.host,
+        port=plugin_config.port,
     )
+    ws_handler.start()
+
+    register_commands(server, image_handler)
+    register_help_messages(server)
 
     # server.register_event_listener(
     #     "mcdr.user_info",
@@ -63,7 +71,7 @@ def on_unload(server: PluginServerInterface):
     """
 	Do some clean up when your plugin is being unloaded. Note that it might be a reload
 	"""
-    server.logger.info('Bye')
+    server.logger.info('【 Plugin unloading 】')
 
     global ws_handler
     if ws_handler is not None:
@@ -71,86 +79,32 @@ def on_unload(server: PluginServerInterface):
 
 
 def on_info(server: PluginServerInterface, info: Info):
-    """
-	Handler for general server output event
-	Recommend to use on_user_info instead if you only care about info created by users
-	"""
-    if not info.is_user and re.fullmatch(r'Starting Minecraft server on \S*', info.content):
-        server.logger.info('Minecraft is starting at address {}'.format(info.content.rsplit(' ', 1)[1]))
+    handle_info_event(server, info)
 
 
 def on_user_info(server: PluginServerInterface, info: Info):
-    server.logger.info(f"info.content = {info.content}")
-    if ws_handler is None:
-        server.logger.info("ws_handler is none")
-    else:
-        ws_handler.broadcast({
-            'type': 'player_msg',
-            'player_name': info.player,
-            "content": info.content
-        })
+    handle_user_info_event(server, info, ws_handler)
 
 def on_player_joined(server: PluginServerInterface, player: str, info: Info):
-    """
-	A new player joined game, welcome!
-	"""
-    # server.tell(player, 'qwq!')
-    # server.say('【mcdr_listener_ws_server】, 你好呀，{}！'.format(player))
-
-    server.logger.info(f"player come:{player}")
-
-    player_logger.log_event(
-        data={
-            "type": "player_join",
-            "player_name": player
-        }
-    )
-
-    if ws_handler is None:
-        server.logger.info("ws_handler is none")
-    else:
-        ws_handler.broadcast({
-            'type': 'player_join',
-            'player_name': player
-        })
+    handle_player_joined_event(server, player, info, ws_handler, player_logger)
 
 
 def on_player_left(server: PluginServerInterface, player: str):
-    """
-	A player left the game, do some cleanup!
-	"""
-    server.say('Bye {}'.format(player))
-
-    server.logger.info(f"player leave:{player}")
-
-    player_logger.log_event(
-        data={
-            "type": "player_leave",
-            "player_name": player
-        }
-    )
-
-    if ws_handler is None:
-        server.logger.info("ws_handler is none")
-    else:
-        ws_handler.broadcast({
-            'type': 'player_leave',
-            'player_name': player
-        })
+    handle_player_left_event(server, player, ws_handler, player_logger)
 
 
 def on_server_start(server: PluginServerInterface):
     """
 	When the server begins to start
 	"""
-    server.logger.info('Server is starting')
+    server.logger.info('【 Server start event 】')
 
 
 def on_server_startup(server: PluginServerInterface):
     """
 	When the server is fully startup
 	"""
-    server.logger.info('Server has started')
+    server.logger.info('【 Server startup done 】')
 
 
 def on_server_stop(server: PluginServerInterface, return_code: int):
@@ -159,14 +113,14 @@ def on_server_stop(server: PluginServerInterface, return_code: int):
 	If the server is not stopped by a plugin, this is the only chance for plugins to restart the server, otherwise MCDR
 	will exit too
 	"""
-    server.logger.info('Server has stopped and its return code is {}'.format(return_code))
+    server.logger.info('【 Server stopped 】 return code = {}'.format(return_code))
 
 
 def on_mcdr_start(server: PluginServerInterface):
     """
 	When MCDR just launched
 	"""
-    server.logger.info('Another new launch for MCDR')
+    server.logger.info('【 MCDR start event 】')
 
 
 def on_mcdr_stop(server: PluginServerInterface):
@@ -174,21 +128,7 @@ def on_mcdr_stop(server: PluginServerInterface):
 	When MCDR is about to stop, go do some clean up
 	MCDR will wait until all on_mcdr_stop event call are finished before exiting
 	"""
-    server.logger.info('See you next time~')
+    server.logger.info('【 MCDR stop event 】')
 
-
-def handle_view_image(server: PluginServerInterface, source: CommandSource, url: str):
-    """处理查看图片命令"""
-    if not source.is_player:
-        source.reply('§c此命令只能由玩家执行')
-        return
-    
-    player_name = source.player
-    server.logger.info(f'[handle_view_image] 玩家 {player_name} 请求查看图片: {url[:100]}...')
-    
-    if image_handler:
-        image_handler.view_image(player_name, url)
-    else:
-        source.reply('§c图片处理器未初始化')
 
 

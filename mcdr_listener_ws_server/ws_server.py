@@ -1,22 +1,22 @@
 # ws_server.py
-import json
 import asyncio
+import json
 import websockets
-import datetime
 from typing import Set, Optional
-from collections import defaultdict
 
-from mcdreforged.api.all import ServerInterface, new_thread
+from mcdreforged.api.all import RTextBase, ServerInterface, new_thread
 
-from .log_utils import PlayerLogger, ServerStatusLogger
+from .message_formatter import format_platform_message
+from .text_sanitizer import sanitize_for_console_encoding
 
 class WebSocketHandler:
-    def __init__(self, server: ServerInterface, image_handler=None, host: str = '0.0.0.0', port: int = 8766):
+    def __init__(self, server: ServerInterface, image_handler=None, host: str = '0.0.0.0', port: int = 60601):
         self.server = server
         self.host = host
         self.port = port
         self.connections: Set[websockets.WebSocketServerProtocol] = set()
         self.ws_server: Optional[websockets.WebSocketServer] = None
+        self.event_loop: Optional[asyncio.AbstractEventLoop] = None
         self.image_handler = image_handler
 
     async def _handler(self, websocket):
@@ -44,14 +44,14 @@ class WebSocketHandler:
             elif msg_type == 'group_to_server':
                 # 处理从QQ群转发到服务器的消息
                 nickname = data.get('nickname', '未知用户')
-                message_content = data.get('message', '')
+                message_content = sanitize_for_console_encoding(data.get('message', ''))
                 group_id = data.get('group_id', '')
-                group_name = data.get('group_name', f'群{group_id}')
+                group_name = sanitize_for_console_encoding(data.get('group_name', f'群{group_id}'))
                 images = data.get('images', [])  # 获取图片信息
                 
                 # 如果有图片，使用图片处理器处理消息
                 if images and self.image_handler:
-                    self.server.logger.info(f"收到包含 {len(images)} 张图片的消息")
+                    self.server.logger.info(f"【 Platform images 】 received {len(images)} image(s)")
                     # 这里我们需要知道是哪个玩家，但websocket消息中没有玩家信息
                     # 我们广播给所有在线玩家
                     self.broadcast_message_with_images(
@@ -72,24 +72,13 @@ class WebSocketHandler:
                     
                     # 在服务器中广播消息
                     self.server.say(formatted_message)
-                    self.server.logger.info(f"收到QQ群消息并转发到服务器: {formatted_message}")
+                    self.server.logger.info(f"【 Platform -> Server 】 {group_name}({group_id}) | {nickname}: {message_content}")
                 
         except Exception as e:
-            self.server.logger.error(f"消息处理错误: {str(e)}")
+            self.server.logger.error(f"【 WS error 】 failed to handle message: {str(e)}")
 
-    def format_message_for_minecraft(self, group_id: int, group_name: str, nickname: str, message: str) -> str:
-        """使用Minecraft MOTD格式格式化QQ群消息"""
-        # 使用不同颜色和格式区分不同部分
-        # §6 = 金色 (群名)
-        # §l = 粗体
-        # §b = 青色 (群号)
-        # §a = 绿色 (用户名)
-        # §o = 斜体
-        # §f = 白色 (消息内容)
-        # §r = 重置格式
-        
-        formatted_msg = f"§6§l[{group_name}]§r §b({group_id})§r §a§o{nickname}§r§f: {message}"
-        return formatted_msg
+    def format_message_for_minecraft(self, group_id: str, group_name: str, nickname: str, message: str):
+        return format_platform_message(group_id, group_name, nickname, message)
 
     async def safe_send(self, websocket, data: dict):
         if not websocket.closed:
@@ -131,9 +120,7 @@ class WebSocketHandler:
         
         group_name = sanitize_text(group_name)
         nickname = sanitize_text(nickname)
-        
-        # 构造消息前缀（使用JSON文本组件格式，而不是§颜色代码）
-        # § 字符在tellraw的SNBT中不允许出现
+
         prefix_components = [
             {"text": "[", "color": "gold", "bold": True},
             {"text": group_name, "color": "gold", "bold": True},
@@ -156,18 +143,14 @@ class WebSocketHandler:
             if self.image_handler and '<img:' in message:
                 # 处理图片标记（直接传递图片列表）
                 processed_msg = self.image_handler.replace_image_markers(message, images)
-                
-                # 构造完整的tellraw命令（使用组件数组）
-                import json
                 prefix_json = json.dumps(prefix_components, ensure_ascii=False, separators=(',', ':'))
-                # 移除外层的[]，因为我们要合并到一个大数组中
-                prefix_json_inner = prefix_json[1:-1]  # 去掉 [ ]
-                
+                prefix_json_inner = prefix_json[1:-1]
                 full_message = f'[""' + (f',{prefix_json_inner},' if prefix_json_inner else ',') + f'{processed_msg}]'
                 tellraw_command = f'tellraw @a {full_message}'
+                self.server.logger.info(f"【 Image tellraw 】 {full_message}")
                 
                 self.server.execute(tellraw_command)
-                self.server.logger.info(f"已发送包含图片的消息到所有玩家")
+                self.server.logger.info("【 Image broadcast 】 sent image message to all online players")
             else:
                 # 没有图片处理器，使用普通格式
                 formatted_message = self.format_message_for_minecraft(
@@ -179,7 +162,7 @@ class WebSocketHandler:
                 self.server.say(formatted_message)
                 
         except Exception as e:
-            self.server.logger.error(f"广播包含图片的消息失败: {e}")
+            self.server.logger.error(f"【 Image broadcast error 】 {e}")
             # 回退到普通消息
             formatted_message = self.format_message_for_minecraft(
                 group_id=group_id,
@@ -195,13 +178,24 @@ class WebSocketHandler:
         try:
             asyncio.run(self.run_server())
         except Exception as e:
-            self.server.logger.error(f"WebSocket服务器启动失败: {str(e)}")
+            self.server.logger.error(f"【 WS startup error 】 {str(e)}")
 
     async def run_server(self):
-        async with websockets.serve(self._handler, self.host, self.port):
-            self.server.logger.info(f"WebSocket服务已启动 ws://{self.host}:{self.port}")
-            await asyncio.Future()  # 永久运行
+        self.event_loop = asyncio.get_running_loop()
+        self.ws_server = await websockets.serve(self._handler, self.host, self.port)
+        self.server.logger.info(f"【 WS started 】 ws://{self.host}:{self.port}")
+        try:
+            await self.ws_server.wait_closed()
+        finally:
+            self.ws_server = None
+            self.event_loop = None
 
     def stop(self):
-        if self.ws_server is not None:
-            self.server.schedule_task(self.ws_server.close(), block=False)
+        if self.ws_server is None or self.event_loop is None:
+            return
+
+        def shutdown():
+            if self.ws_server is not None:
+                self.ws_server.close()
+
+        self.event_loop.call_soon_threadsafe(shutdown)
