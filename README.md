@@ -1,4 +1,8 @@
+![mcdr_listener_ws_server](https://socialify.git.ci/VincentZyuApps/mcdr_listener_ws_server/image?custom_description=%F0%9F%8C%90%F0%9F%92%AC%F0%9F%93%A1+%E7%BE%A4%E6%9C%8D%E4%BA%92%E9%80%9A%EF%BC%8C%E4%B8%8D%E6%AD%A2%E4%BA%8E%E6%96%87%E5%AD%97%E3%80%82%E5%9C%A8+MC+%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BC%80%E5%90%AF+WebSocket+%E6%9C%8D%E5%8A%A1%EF%BC%8C%E5%B0%86%E7%8E%A9%E5%AE%B6%E8%81%8A%E5%A4%A9%E5%92%8C%E8%BF%9B%E5%87%BA%E6%9C%8D%E4%BA%8B%E4%BB%B6%E6%8E%A8%E9%80%81%E5%88%B0%E8%81%8A%E5%A4%A9%E5%B9%B3%E5%8F%B0%EF%BC%9B%E5%90%8C%E6%97%B6%E6%8E%A5%E6%94%B6%E5%B9%B3%E5%8F%B0%E6%96%87%E5%AD%97%E4%B8%8E%E5%9B%BE%E7%89%87%E6%B6%88%E6%81%AF%EF%BC%8C%E5%9B%BE%E7%89%87%E4%BB%A5+display+%E5%AE%9E%E4%BD%93%E5%9C%A8%E6%B8%B8%E6%88%8F%E5%86%85%E6%B8%B2%E6%9F%93%E5%B1%95%E7%A4%BA%E3%80%82%F0%9F%8E%AE%F0%9F%94%97&description=1&font=JetBrains+Mono&forks=1&issues=1&language=1&name=1&owner=1&pattern=Signal&pulls=1&stargazers=1&theme=Auto)
+
 # mcdr_listener_ws_server
+
+[🇬🇧 English](README.en-us.md)
 
 [![MCDR](https://img.shields.io/badge/for-MCDReforged%202-fac00f?style=for-the-badge&labelColor=3876a9)](https://mcdreforged.com/zh-CN)
 
