@@ -1,4 +1,4 @@
-![mcdr_listener_ws_server](https://socialify.git.ci/VincentZyuApps/mcdr_listener_ws_server/image?custom_description=%F0%9F%8C%90%F0%9F%92%AC%F0%9F%93%A1+Group-Server+bridge%2C+beyond+text.+Start+a+WebSocket+server+on+MC%2C+push+player+chat+and+join%2Fleave+events+to+chat+platforms%3B+receive+text+and+images+from+platforms%2C+render+images+as+display+entities+in-game.%F0%9F%8E%AE%F0%9F%94%97&description=1&font=JetBrains+Mono&forks=1&issues=1&language=1&name=1&owner=1&pattern=Signal&pulls=1&stargazers=1&theme=Auto)
+![mcdr_listener_ws_server](https://socialify.git.ci/VincentZyuApps/mcdr_listener_ws_server/image?custom_description=%F0%9F%8C%90%F0%9F%92%AC%F0%9F%93%A1+Group-Server+bridge%2C+beyond+text.+Start+a+WebSocket+server+on+MC%2C+push+player+chat+and+join%2Fleave+events+to+chat+platforms%3B+receive+text+and+images+from+platforms%2C+render+images+as+display+entities+in-game.%F0%9F%8E%AE%F0%9F%94%97&description=1&font=JetBrains+Mono&forks=1&issues=1&language=1&name=1&owner=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F63280128%3Fs%3D200%26v%3D4&name=1&owner=1&pattern=Plus&pulls=1&stargazers=1&theme=Auto)
 
 # mcdr_listener_ws_server
 
@@ -19,19 +19,25 @@
 
 A group-server bridge plugin: **text & images** from chat platforms ⇄ **chat & join/leave events** from Minecraft Java servers.
 
-Supports Koishi Bot — any platform Koishi supports works (tested with QQ OneBot v11 / Kook / Discord / Telegram).
+Supports Koishi Bot — theoretically works with most platforms Koishi supports (QQ OneBot v11 / Kook / Discord / Telegram).
+> Ready-made Koishi plugin: https://github.com/VincentZyuApps/koishi-plugin-mclistener-ws-client
+> My test & production environment: QQ OneBot V11 / Discord
+You can also write your own plugin to integrate with other bot frameworks, such as [Koishi](https://koishi.chat/zh-CN/manual/starter/boilerplate.html), [Nonebot2](https://nonebot.dev/docs/quick-start), [Astrbot](https://docs.astrbot.app/deploy/astrbot/docker.html), or any other web application via a [WebSocket](https://github.com/websockets/ws) client.
 
-Supports any Minecraft Java server managed by MCDReforged (tested on Spigot / Paper 1.21.8).
+Supports select Minecraft Java server distributions managed by MCDReforged.
+> My test & production environment: Spigot / Paper 1.21.8
 
 ### What It Does
 
 **→ Chat Platform → MC Server**
 - Forward text messages into the game
 - Render image messages as in-game `text_display` (tested with OneBot v11)
+![](docs/images/preview-chat-platform-to-mc-server.png)
 
 **→ MC Server → Chat Platform**
 - Forward player chat messages to the platform
 - Forward player join/leave notifications to the platform
+![](docs/images/preview-mc-server-to-chat-platform.png)
 
 **→ Inside MC Server**
 - Players can use `!!view_image <url>` to view remote images manually

@@ -1,4 +1,4 @@
-![mcdr_listener_ws_server](https://socialify.git.ci/VincentZyuApps/mcdr_listener_ws_server/image?custom_description=%F0%9F%8C%90%F0%9F%92%AC%F0%9F%93%A1+%E7%BE%A4%E6%9C%8D%E4%BA%92%E9%80%9A%EF%BC%8C%E4%B8%8D%E6%AD%A2%E4%BA%8E%E6%96%87%E5%AD%97%E3%80%82%E5%9C%A8+MC+%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BC%80%E5%90%AF+WebSocket+%E6%9C%8D%E5%8A%A1%EF%BC%8C%E5%B0%86%E7%8E%A9%E5%AE%B6%E8%81%8A%E5%A4%A9%E5%92%8C%E8%BF%9B%E5%87%BA%E6%9C%8D%E4%BA%8B%E4%BB%B6%E6%8E%A8%E9%80%81%E5%88%B0%E8%81%8A%E5%A4%A9%E5%B9%B3%E5%8F%B0%EF%BC%9B%E5%90%8C%E6%97%B6%E6%8E%A5%E6%94%B6%E5%B9%B3%E5%8F%B0%E6%96%87%E5%AD%97%E4%B8%8E%E5%9B%BE%E7%89%87%E6%B6%88%E6%81%AF%EF%BC%8C%E5%9B%BE%E7%89%87%E4%BB%A5+display+%E5%AE%9E%E4%BD%93%E5%9C%A8%E6%B8%B8%E6%88%8F%E5%86%85%E6%B8%B2%E6%9F%93%E5%B1%95%E7%A4%BA%E3%80%82%F0%9F%8E%AE%F0%9F%94%97&description=1&font=JetBrains+Mono&forks=1&issues=1&language=1&name=1&owner=1&pattern=Signal&pulls=1&stargazers=1&theme=Auto)
+![mcdr_listener_ws_server](https://socialify.git.ci/VincentZyuApps/mcdr_listener_ws_server/image?custom_description=%F0%9F%8C%90%F0%9F%92%AC%F0%9F%93%A1+%E7%BE%A4%E6%9C%8D%E4%BA%92%E9%80%9A%EF%BC%8C%E4%B8%8D%E6%AD%A2%E4%BA%8E%E6%96%87%E5%AD%97%E3%80%82%E5%9C%A8+MC+%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BC%80%E5%90%AF+WebSocket+%E6%9C%8D%E5%8A%A1%EF%BC%8C%E5%B0%86%E7%8E%A9%E5%AE%B6%E8%81%8A%E5%A4%A9%E5%92%8C%E8%BF%9B%E5%87%BA%E6%9C%8D%E4%BA%8B%E4%BB%B6%E6%8E%A8%E9%80%81%E5%88%B0%E8%81%8A%E5%A4%A9%E5%B9%B3%E5%8F%B0%EF%BC%9B%E5%90%8C%E6%97%B6%E6%8E%A5%E6%94%B6%E5%B9%B3%E5%8F%B0%E6%96%87%E5%AD%97%E4%B8%8E%E5%9B%BE%E7%89%87%E6%B6%88%E6%81%AF%EF%BC%8C%E5%9B%BE%E7%89%87%E4%BB%A5+display+%E5%AE%9E%E4%BD%93%E5%9C%A8%E6%B8%B8%E6%88%8F%E5%86%85%E6%B8%B2%E6%9F%93%E5%B1%95%E7%A4%BA%E3%80%82%F0%9F%8E%AE%F0%9F%94%97&description=1&font=JetBrains+Mono&forks=1&issues=1&language=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F63280128%3Fs%3D200%26v%3D4&name=1&owner=1&pattern=Plus&pulls=1&stargazers=1&theme=Auto)
 
 # mcdr_listener_ws_server
 
@@ -19,19 +19,25 @@
 
 聊天平台 **图文消息** ⇄ Minecraft Java服务器 **文字消息与进出服事件** 的群服互通插件。
 
-支持 Koishi Bot 接入，Koishi 支持的聊天平台均可使用（已实测 QQ OneBot v11 / Kook / Discord / Telegram）。
+支持 Koishi Bot 接入，理论上 Koishi 支持的大部分聊天平台均可使用（QQ OneBot v11 / Kook / Discord / Telegram）。
+> 已有现成的Koishi 插件: https://github.com/VincentZyuApps/koishi-plugin-mclistener-ws-client
+> 我自己的测试环境和生产环境: QQ OneBot V11 / Discord
+当然你也可以自己编写插件把他接入到其他的Bot框架，比如[Koishi](https://koishi.chat/zh-CN/manual/starter/boilerplate.html)，[Nonebot2](https://nonebot.dev/docs/quick-start)，[Astrbot](https://docs.astrbot.app/deploy/astrbot/docker.html)等等，或者其他任何形式的Web应用的 [WebSocket](https://github.com/websockets/ws)客户端接入。
 
-支持 MCDReforged 托管的任何 Minecraft Java 服务器（测试环境：Spigot / Paper 1.21.8）。
+支持 MCDReforged 部分 Minecraft Java 服务端发行版。
+> 我自己的测试环境和生产环境: Spigot / Paper 1.21.8
 
 ### 它能做什么
 
 **→ 聊天平台 → MC 服务器**
 - 文字消息转发到游戏内
 - 图片消息渲染为游戏内 `text_display`（已实测 OneBot v11）
+![](docs/images/preview-chat-platform-to-mc-server.png)
 
 **→ MC 服务器 → 聊天平台**
 - 玩家聊天消息转发到平台
 - 玩家加入/退出服务器通知转发到平台
+![](docs/images/preview-mc-server-to-chat-platform.png)
 
 **→ MC 服务器内**
 - 玩家可用 `!!view_image <url>` 命令手动查看远程图片
