@@ -24,6 +24,7 @@ class WebSocketHandler:
         remote_exec_command_whitelist: list = None,
         remote_exec_command_timeout_sec: int = 10,
         remote_exec_result_max_length: int = 4000,
+        strip_message_whitespace: bool = True,
     ):
         self.server = server
         self.host = host
@@ -37,6 +38,7 @@ class WebSocketHandler:
         self.remote_exec_command_whitelist = remote_exec_command_whitelist or []
         self.remote_exec_command_timeout_sec = remote_exec_command_timeout_sec
         self.remote_exec_result_max_length = remote_exec_result_max_length
+        self.strip_message_whitespace = strip_message_whitespace
 
     def _verify_token(self, websocket) -> bool:
         if not self.ws_token:
@@ -242,7 +244,13 @@ class WebSocketHandler:
     def format_message_for_minecraft(
         self, group_id: str, group_name: str, nickname: str, message: str
     ):
-        return format_platform_message(group_id, group_name, nickname, message)
+        return format_platform_message(
+            group_id,
+            group_name,
+            nickname,
+            message,
+            strip_ws=self.strip_message_whitespace,
+        )
 
     async def safe_send(self, websocket, data: dict):
         try:

@@ -59,6 +59,32 @@ Supports select Minecraft Java server distributions managed by MCDReforged.
 - Execute MC server RCON commands from the chat platform, results sent back to chat
 ![](docs/images/preview-exec-rcon-command-at-chat-platform.png)
 
+## ⚠️ Prerequisite: Enable RCON
+
+The following core features **require** RCON to be enabled:
+- 🖼️ **In-game image rendering** (`!!view_image` command + image message rendering)
+- 🖥️ **Remote command execution** (execute MC server commands from chat platform and get results back)
+
+> If you only need basic text message forwarding and join/leave notifications, you can skip this step.
+
+### Configuration Steps
+
+**1. Minecraft Server** — Enable RCON in `server.properties`:
+```properties
+enable-rcon=true
+rcon.port=25575
+rcon.password=your_rcon_password
+```
+
+**2. MCDR Main Config** — Configure RCON in MCDR's `config.yml` (the plugin executes commands via MCDR's RCON interface):
+```yaml
+rcon:
+  enable: true
+  address: 127.0.0.1
+  port: 25575
+  password: your_rcon_password
+```
+
 ## Installation
 
 Place the plugin in MCDR's plugin directory and ensure dependencies are installed:
@@ -90,18 +116,23 @@ Auto-generated from the bundled `resources/` template at `config/mcdr_listener_w
 | `remote_exec_command_whitelist` | 🛡️ Allowed command prefixes (empty=allow all) | `[]` |
 | `remote_exec_command_timeout_sec` | ⏱️ Command execution timeout (seconds) | `10` |
 | `remote_exec_result_max_length` | 📏 Max length of command result output | `4000` |
+| `strip_message_whitespace` | 🧹 Strip newlines and tabs from messages (`\n` `\r` `\t` → space, prevent broken messages in-game) | `true` |
 | `cache_dir` | 📂 Image cache directory | `./cache/mcdr_listener_ws_server/images/` |
 | `image_max_side_length` | 📐 Max side length of displayed images | `64` |
 | `image_duration_sec` | ⏱️ Image display duration (seconds) | `10` |
 | `image_cache_ttl_sec` | 🧹 Image cache retention time (seconds) | `180` |
-| `image_host_whitelist` | 🛡️ Allowed image URL hosts | `multimedia.nt.qq.com.cn`, `gxh.vip.qq.com` |
+| `image_host_whitelist` | 🛡️ Allowed image URL hosts, each entry can specify a proxy (empty=direct, set proxy=via proxy) | `multimedia.nt.qq.com.cn`(direct), `gxh.vip.qq.com`(direct), `cdn.discordapp.com`(via proxy), `media.discordapp.net`(via proxy) |
 
 > For local testing (run a WS client locally to simulate a chat platform), add `127.0.0.1` to `image_host_whitelist` in the generated config file `config/mcdr_listener_ws_server/config.yml`:
 > ```yaml
 > image_host_whitelist:
->   - multimedia.nt.qq.com.cn
->   - gxh.vip.qq.com
->   - 127.0.0.1
+>   - host: multimedia.nt.qq.com.cn
+>   - host: gxh.vip.qq.com
+>   - host: cdn.discordapp.com
+>     proxy: http://127.0.0.1:7890
+>   - host: media.discordapp.net
+>     proxy: http://127.0.0.1:7890
+>   - host: 127.0.0.1
 > ```
 
 ## Commands
@@ -186,22 +217,3 @@ The server will respond with the execution result:
     "result": "..."
 }
 ```
-
-> ⚠️ **Prerequisite: Enable RCON**
->
-> The remote command execution feature relies on the Minecraft server's RCON interface. Before using it, ensure:
->
-> 1. **Minecraft Server**: Enable RCON in `server.properties`
->    ```properties
->    enable-rcon=true
->    rcon.port=25575
->    rcon.password=your_rcon_password
->    ```
-> 2. **MCDR Main Config**: Configure RCON in MCDR's `config.yml` (the plugin executes commands via MCDR's RCON interface)
->    ```yaml
->    rcon:
->      enable: true
->      address: 127.0.0.1
->      port: 25575
->      password: your_rcon_password
->    ```

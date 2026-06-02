@@ -46,6 +46,7 @@ def on_load(server: PluginServerInterface, old_module):
         remote_exec_command_whitelist=plugin_config.remote_exec_command_whitelist,
         remote_exec_command_timeout_sec=plugin_config.remote_exec_command_timeout_sec,
         remote_exec_result_max_length=plugin_config.remote_exec_result_max_length,
+        strip_message_whitespace=plugin_config.strip_message_whitespace,
     )
     ws_handler.start()
 

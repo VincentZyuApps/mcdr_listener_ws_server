@@ -19,7 +19,8 @@ class PluginConfig(Serializable):
     # WebSocket connection token, empty string means no verification
     ws_token: str = ""
 
-    # Enable remote command execution
+    strip_message_whitespace: bool = True
+
     enable_remote_exec_command: bool = False
 
     # Allowed command prefixes, empty list means no restriction

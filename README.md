@@ -59,6 +59,32 @@
 - 通过聊天平台远程执行 MC 服务器 RCON 命令，结果回传至聊天平台
 ![](docs/images/preview-exec-rcon-command-at-chat-platform.png)
 
+## ⚠️ 前置条件：启用 RCON
+
+以下核心功能**必须**启用 RCON 才能使用：
+- 🖼️ **游戏内展示外部图片**（`!!view_image` 命令 + 图片消息渲染）
+- 🖥️ **远程命令执行**（从聊天平台执行 MC 服务器命令并返回结果）
+
+> 如果你只需要基础的文字消息转发和进出服通知，可以跳过此步骤。
+
+### 配置步骤
+
+**1. Minecraft 服务器** — 在 `server.properties` 中启用 RCON：
+```properties
+enable-rcon=true
+rcon.port=25575
+rcon.password=你的RCON密码
+```
+
+**2. MCDR 主配置文件** — 在 MCDR 的 `config.yml` 中配置 RCON（插件通过 MCDR 的 RCON 接口执行命令）：
+```yaml
+rcon:
+  enable: true
+  address: 127.0.0.1
+  port: 25575
+  password: 你的RCON密码
+```
+
 ## 安装
 
 将插件放入 MCDR 插件目录，确保依赖已安装：
@@ -90,18 +116,23 @@ uv pip install -r requirements.txt
 | `remote_exec_command_whitelist` | 🛡️ 远程命令前缀白名单（空列表=不限制） | `[]` |
 | `remote_exec_command_timeout_sec` | ⏱️ 命令执行超时（秒） | `10` |
 | `remote_exec_result_max_length` | 📏 返回结果最大字符数，超长截断 | `4000` |
+| `strip_message_whitespace` | 🧹 清理消息中的换行和制表符（`\n` `\r` `\t` → 空格，避免游戏内消息断裂） | `true` |
 | `cache_dir` | 📂 图片缓存目录 | `./cache/mcdr_listener_ws_server/images/` |
 | `image_max_side_length` | 📐 图片最大边长 | `64` |
 | `image_duration_sec` | ⏱️ 图片展示时长（秒） | `10` |
 | `image_cache_ttl_sec` | 🧹 图片缓存保留时长（秒） | `180` |
-| `image_host_whitelist` | 🛡️ 图片域名白名单 | `multimedia.nt.qq.com.cn`, `gxh.vip.qq.com` |
+| `image_host_whitelist` | 🛡️ 图片域名白名单，每个域名可单独配置代理（空=直连，填代理地址=走代理） | `multimedia.nt.qq.com.cn`(直连), `gxh.vip.qq.com`(直连), `cdn.discordapp.com`(走代理), `media.discordapp.net`(走代理) |
 
 > 如需本地测试（本地起一个 WS 客户端模拟聊天平台接入），可在生成的配置文件 `config/mcdr_listener_ws_server/config.yml` 中将 `127.0.0.1` 加入 `image_host_whitelist`：
 > ```yaml
 > image_host_whitelist:
->   - multimedia.nt.qq.com.cn
->   - gxh.vip.qq.com
->   - 127.0.0.1
+>   - host: multimedia.nt.qq.com.cn
+>   - host: gxh.vip.qq.com
+>   - host: cdn.discordapp.com
+>     proxy: http://127.0.0.1:7890
+>   - host: media.discordapp.net
+>     proxy: http://127.0.0.1:7890
+>   - host: 127.0.0.1
 > ```
 
 ## 命令
@@ -186,22 +217,3 @@ uv pip install -r requirements.txt
     "result": "..."
 }
 ```
-
-> ⚠️ **前置条件：启用 RCON**
->
-> 远程命令执行功能依赖 Minecraft 服务器的 RCON 接口。使用前请确保：
->
-> 1. **Minecraft 服务器**：在 `server.properties` 中启用 RCON
->    ```properties
->    enable-rcon=true
->    rcon.port=25575
->    rcon.password=你的RCON密码
->    ```
-> 2. **MCDR 主配置文件**：在 MCDR 的 `config.yml` 中配置 RCON（插件通过 MCDR 的 RCON 接口执行命令）
->    ```yaml
->    rcon:
->      enable: true
->      address: 127.0.0.1
->      port: 25575
->      password: 你的RCON密码
->    ```
