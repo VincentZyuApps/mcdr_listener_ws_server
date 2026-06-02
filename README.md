@@ -18,6 +18,31 @@
 
 ---
 
+## 🚀 3 分钟快速上手
+
+### Step 1: 配置 WebSocket 服务
+
+1. 将插件放入 MCDR 插件目录，安装依赖: `uv pip install -r requirements.txt`
+2. 加载插件，编辑生成的 `config/mcdr_listener_ws_server/config.yml`
+3. 修改 `ws_token` 为你自己的密码
+4. 确认 `host`（默认 `0.0.0.0`）和 `port`（默认 `60601`）可被客户端访问
+
+### Step 2: 配置 Koishi 客户端
+
+在 Koishi 端安装 `mclistener-ws-client`，配置:
+- `wsServerUrl`: 指向本插件的 WebSocket 地址
+- `wsToken`: 与服务端 `ws_token` 一致
+- `sourcePlatformList` / `targetPlatformChannelList`: 你的群/频道
+
+### Step 3: 验证
+
+- 群里发消息 → 游戏内应显示 `[群名] (群号) 昵称: 消息`
+- 游戏内说话 → 群里应收到玩家聊天消息
+
+> 💡 图片渲染和远程命令需额外配置 RCON，见下方说明。
+
+---
+
 ## 📡 互通架构
 
 ### 聊天平台一侧
@@ -40,11 +65,13 @@
 支持 MCDReforged 部分 Minecraft Java 服务端发行版。
 > 我自己的测试环境和生产环境: [Spigot](https://www.spigotmc.org/) / [Paper](https://papermc.io/) 1.21.8
 
-### 它能做什么
+--- 
+
+## 👀 它能做什么
 
 #### **→ 聊天平台 → MC 服务器**
 - 文字消息转发到游戏内
-- 图片消息渲染为游戏内 `text_display`, 使用`!!view_image`指令
+- 图片消息以 tellraw 可点击文本广播给所有在线玩家，点击后触发 `!!view_image` 渲染为 `text_display` 实体
 ##### **QQ（OneBot v11）**: ![](docs/images/preview-onebotv11-chat-platform-to-mc-server.png)
 ##### **Discord**: ![](docs/images/preview-discord-chat-platform-to-mc-server.png)
 
@@ -59,6 +86,8 @@
 #### **→ 聊天平台 → MC 服务器（远程命令执行）**
 - 通过聊天平台远程执行 MC 服务器 RCON 命令，结果回传至聊天平台
 ##### **QQ（OneBot v11）**: ![](docs/images/preview-exec-rcon-command-at-chat-platform.png)
+
+---
 
 ## ⚠️ 前置条件：启用 RCON
 
@@ -96,9 +125,9 @@ rcon:
 - `requests >= 2.32.0`
 
 ```bash
-git clone https://github.com/VincentZyuApps/mcdr_listener_ws_server
+git clone https://github.com/VincentZyuApps/mcdr_listener_ws_server ./plugins/mcdr_listener_ws_server
 # 或国内镜像
-git clone https://gitee.com/vincent-zyu/mcdr_listener_ws_server.git
+git clone https://gitee.com/vincent-zyu/mcdr_listener_ws_server.git ./plugins/mcdr_listener_ws_server
 ```
 
 ```powershell
@@ -106,7 +135,7 @@ uv pip install mcdreforged
 uv pip install -r requirements.txt
 ```
 
-> 若在 Windows 下运行，建议MCDR的`config.yml`的encoding和coding都改成`GBK`，避免 emoji 等字符问题。
+> 若在 Windows 下运行，建议MCDR的`config.yml`的encoding和coding都改成`GBK`，避免 emoji 等字符问题。Linux可以都用utf-8
 
 ## 配置
 
@@ -224,3 +253,12 @@ uv pip install -r requirements.txt
     "result": "..."
 }
 ```
+
+---
+
+## ⚠️ 一些已知限制
+
+- **图片域名需在白名单**: 图片 URL 的域名必须在 `image_host_whitelist` 中，否则不会下载/渲染
+- **`!!view_image` 全服冷却**: 该命令有全服共享冷却（默认 5.5 秒），冷却期间其他玩家无法使用
+- **远程命令需双边配置**: 需要同时开启插件 `enable_remote_exec_command` 和客户端相应配置
+- **Windows 编码**: Windows Powershell下运行 MCDR 的 `config.yml` 建议将 encoding和decoding 设为 `GBK`，避免一些字符的编码问题比如emoji，Linux可以都用utf-8

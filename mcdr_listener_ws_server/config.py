@@ -69,7 +69,7 @@ def _release_default_config(server: PluginServerInterface, config_path: Path) ->
     with server.open_bundled_file(_DEFAULT_CONFIG_BUNDLED_PATH) as source:
         with config_path.open("wb") as target:
             shutil.copyfileobj(source, target)
-    server.logger.info(f"【 Config 】 released default config to {config_path}")
+    server.logger.info(f"【-- Config --】 released default config to {config_path}")
 
 
 def ensure_config_file(server: PluginServerInterface) -> Path:
@@ -88,6 +88,6 @@ def load_config(server: PluginServerInterface) -> PluginConfig:
         return PluginConfig.deserialize(raw)
     except Exception as e:
         server.logger.warning(
-            f"【 Config 】 failed to deserialize config: {e}, using defaults"
+            f"【-- Config --】 failed to deserialize config: {e}, using defaults"
         )
         return PluginConfig()

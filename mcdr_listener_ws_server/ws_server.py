@@ -59,7 +59,7 @@ class WebSocketHandler:
     async def _handler(self, websocket):
         if not self._verify_token(websocket):
             self.server.logger.warning(
-                f"【 WS auth failed 】 rejected connection from {websocket.remote_address}"
+                f"【-- WS auth failed --】 rejected connection from {websocket.remote_address}"
             )
             await websocket.close(1008, "token verification failed")
             return
@@ -93,7 +93,7 @@ class WebSocketHandler:
                 # 如果有图片，使用图片处理器处理消息
                 if images and self.image_handler:
                     self.server.logger.info(
-                        f"【 Platform images 】 received {len(images)} image(s)"
+                        f"【-- Platform images --】 received {len(images)} image(s)"
                     )
                     # 这里我们需要知道是哪个玩家，但websocket消息中没有玩家信息
                     # 我们广播给所有在线玩家
@@ -116,12 +116,12 @@ class WebSocketHandler:
                     # 在服务器中广播消息
                     self.server.say(formatted_message)
                     self.server.logger.info(
-                        f"【 Platform -> Server 】 {group_name}({group_id}) | {nickname}: {message_content}"
+                        f"【-- Platform -> Server --】 {group_name}({group_id}) | {nickname}: {message_content}"
                     )
 
         except Exception as e:
             self.server.logger.error(
-                f"【 WS error 】 failed to handle message: {str(e)}"
+                f"【-- WS error --】 failed to handle message: {str(e)}"
             )
 
     async def _handle_command(self, data: dict, websocket):
@@ -167,7 +167,7 @@ class WebSocketHandler:
                 return
 
         sender_info = f"{sender.get('platform', '?')}:{sender.get('user_id', '?')}({sender.get('nickname', '?')})"
-        self.server.logger.info(f"【 Remote command 】 {sender_info} -> {command}")
+        self.server.logger.info(f"【-- Remote command --】 {sender_info} -> {command}")
 
         try:
             loop = asyncio.get_running_loop()
@@ -178,7 +178,7 @@ class WebSocketHandler:
 
             if result is None:
                 self.server.logger.warning(
-                    f"【 Remote command 】 rcon_query returned None — "
+                    f"【-- Remote command --】 rcon_query returned None — "
                     f"RCON may not be enabled on the Minecraft server "
                     f"(check enable-rcon in server.properties)"
                 )
@@ -229,7 +229,7 @@ class WebSocketHandler:
                 },
             )
         except Exception as e:
-            self.server.logger.error(f"【 Remote command error 】 {str(e)}")
+            self.server.logger.error(f"【-- Remote command error --】 {str(e)}")
             await self.safe_send(
                 websocket,
                 {
@@ -335,11 +335,11 @@ class WebSocketHandler:
                     + f"{processed_msg}]"
                 )
                 tellraw_command = f"tellraw @a {full_message}"
-                self.server.logger.info(f"【 Image tellraw 】 {full_message}")
+                self.server.logger.info(f"【-- Image tellraw --】 {full_message}")
 
                 self.server.execute(tellraw_command)
                 self.server.logger.info(
-                    "【 Image broadcast 】 sent image message to all online players"
+                    "【-- Image broadcast --】 sent image message to all online players"
                 )
             else:
                 # 没有图片处理器，使用普通格式
@@ -352,7 +352,7 @@ class WebSocketHandler:
                 self.server.say(formatted_message)
 
         except Exception as e:
-            self.server.logger.error(f"【 Image broadcast error 】 {e}")
+            self.server.logger.error(f"【-- Image broadcast error --】 {e}")
             # 回退到普通消息
             formatted_message = self.format_message_for_minecraft(
                 group_id=group_id,
@@ -367,12 +367,12 @@ class WebSocketHandler:
         try:
             asyncio.run(self.run_server())
         except Exception as e:
-            self.server.logger.error(f"【 WS startup error 】 {str(e)}")
+            self.server.logger.error(f"【-- WS startup error --】 {str(e)}")
 
     async def run_server(self):
         self.event_loop = asyncio.get_running_loop()
         self.ws_server = await websockets.serve(self._handler, self.host, self.port)
-        self.server.logger.info(f"【 WS started 】 ws://{self.host}:{self.port}")
+        self.server.logger.info(f"【-- WS started --】 ws://{self.host}:{self.port}")
         try:
             await self.ws_server.wait_closed()
         finally:

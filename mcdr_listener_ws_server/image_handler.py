@@ -92,7 +92,7 @@ class ImageHandler:
 
         self.pending_images[player_name][idx] = {"url": url, "summary": summary}
         self.server.logger.info(
-            f"【 Image registered 】 {player_name} #{idx}: {url[:50]}..."
+            f"【-- Image registered --】 {player_name} #{idx}: {url[:50]}..."
         )
 
     def replace_image_markers(self, message: str, images: list) -> str:
@@ -125,7 +125,7 @@ class ImageHandler:
 
         # 发送加载提示
         self.server.tell(player_name, tr(self.server, "image.loading"))
-        self.server.logger.info(f"【 Image request 】 {player_name}: {url}")
+        self.server.logger.info(f"【-- Image request --】 {player_name}: {url}")
 
         # 异步下载和展示图片
         def download_and_display():
@@ -147,7 +147,7 @@ class ImageHandler:
 
             except Exception as e:
                 self.server.logger.error(
-                    f"【 Image error 】 failed to process image: {e}"
+                    f"【-- Image error --】 failed to process image: {e}"
                 )
                 import traceback
 

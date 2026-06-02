@@ -17,9 +17,9 @@
 
    ```bash
    # GitHub
-   git clone https://github.com/VincentZyuApps/mcdr_listener_ws_server.git
+   git clone https://github.com/VincentZyuApps/mcdr_listener_ws_server.git ./plugins/mcdr_listener_ws_server
    # 或 Gitee（国内加速）
-   git clone https://gitee.com/vincent-zyu/mcdr_listener_ws_server.git
+   git clone https://gitee.com/vincent-zyu/mcdr_listener_ws_server.git ./plugins/mcdr_listener_ws_server
    ```
 2. 根据需要修改配置文件 `config/mcdr_listener_ws_server/config.yml`（首次加载后自动生成）
 3. 确保已安装依赖：

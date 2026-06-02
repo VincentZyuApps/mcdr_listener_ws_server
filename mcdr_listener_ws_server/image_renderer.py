@@ -27,22 +27,22 @@ class ImageRenderer:
             image_format == "GIF" or getattr(image, "is_animated", False)
         )
         self.server.logger.info(
-            f"【 Image info 】 format={image_format}, mode={image.mode}, size={image.size}"
+            f"【-- Image info --】 format={image_format}, mode={image.mode}, size={image.size}"
         )
 
         if self.last_open_was_animated:
             self.server.logger.info(
-                "【 Image process 】 detected GIF, using first frame"
+                "【-- Image process --】 detected GIF, using first frame"
             )
             image.seek(0)
             image = image.convert("RGB")
         elif image.mode not in ("RGB", "RGBA"):
             self.server.logger.info(
-                f"【 Image process 】 convert mode {image.mode} -> RGB"
+                f"【-- Image process --】 convert mode {image.mode} -> RGB"
             )
             image = image.convert("RGB")
         elif image.mode == "RGBA":
-            self.server.logger.info("【 Image process 】 handle RGBA alpha channel")
+            self.server.logger.info("【-- Image process --】 handle RGBA alpha channel")
             background = Image.new("RGB", image.size, (255, 255, 255))
             background.paste(image, mask=image.split()[3])
             image = background
@@ -89,7 +89,7 @@ class ImageRenderer:
             ),
         )
         self.server.logger.info(
-            f"【 Image render 】 generating for {player_name}: {width}x{height}"
+            f"【-- Image render --】 generating for {player_name}: {width}x{height}"
         )
 
         # ── Capture player position & rotation once ────────────────────────
@@ -116,13 +116,13 @@ class ImageRenderer:
                 yaw, pitch = ya, pi
                 use_fixed_position = True
                 self.server.logger.info(
-                    f"【 Image pos 】 captured {player_name} at "
+                    f"【-- Image pos --】 captured {player_name} at "
                     f"({player_x:.2f}, {player_y:.2f}, {player_z:.2f}) "
                     f"yaw={yaw:.1f} pitch={pitch:.1f}"
                 )
         except Exception as e:
             self.server.logger.warning(
-                f"【 Image pos 】 failed to capture position, "
+                f"【-- Image pos --】 failed to capture position, "
                 f"falling back to @s for each pixel: {e}"
             )
             use_fixed_position = False
@@ -204,14 +204,14 @@ class ImageRenderer:
 
                 if pixel_count % 100 == 0:
                     self.server.logger.info(
-                        f"【 Image render 】 progress {pixel_count}/{width * height}"
+                        f"【-- Image render --】 progress {pixel_count}/{width * height}"
                     )
 
         self.server.tell(
             player_name, tr(self.server, "image.rendered", duration_sec=duration_sec)
         )
         self.server.logger.info(
-            f"【 Image render done 】 {pixel_count} pixels generated"
+            f"【-- Image render done --】 {pixel_count} pixels generated"
         )
 
         def delayed_kill():
@@ -220,7 +220,7 @@ class ImageRenderer:
             time.sleep(duration_sec)
             self.server.execute(f"kill @e[type=minecraft:text_display,tag={tag}]")
             self.server.logger.info(
-                f"【 Image cleanup 】 cleared display for {player_name}"
+                f"【-- Image cleanup --】 cleared display for {player_name}"
             )
 
         threading.Thread(target=delayed_kill, daemon=True).start()

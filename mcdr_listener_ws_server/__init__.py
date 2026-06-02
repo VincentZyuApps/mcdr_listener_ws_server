@@ -65,7 +65,7 @@ def on_unload(server: PluginServerInterface):
     """
     Do some clean up when your plugin is being unloaded. Note that it might be a reload
     """
-    server.logger.info("【 Plugin unloading 】")
+    server.logger.info("【-- Plugin unloading --】")
 
     global ws_handler
     if ws_handler is not None:
@@ -92,14 +92,14 @@ def on_server_start(server: PluginServerInterface):
     """
     When the server begins to start
     """
-    server.logger.info("【 Server start event 】")
+    server.logger.info("【-- Server start event --】")
 
 
 def on_server_startup(server: PluginServerInterface):
     """
     When the server is fully startup
     """
-    server.logger.info("【 Server startup done 】")
+    server.logger.info("【-- Server startup done --】")
 
 
 def on_server_stop(server: PluginServerInterface, return_code: int):
@@ -108,14 +108,14 @@ def on_server_stop(server: PluginServerInterface, return_code: int):
     If the server is not stopped by a plugin, this is the only chance for plugins to restart the server, otherwise MCDR
     will exit too
     """
-    server.logger.info("【 Server stopped 】 return code = {}".format(return_code))
+    server.logger.info("【-- Server stopped --】 return code = {}".format(return_code))
 
 
 def on_mcdr_start(server: PluginServerInterface):
     """
     When MCDR just launched
     """
-    server.logger.info("【 MCDR start event 】")
+    server.logger.info("【-- MCDR start event --】")
 
 
 def on_mcdr_stop(server: PluginServerInterface):
@@ -123,4 +123,4 @@ def on_mcdr_stop(server: PluginServerInterface):
     When MCDR is about to stop, go do some clean up
     MCDR will wait until all on_mcdr_stop event call are finished before exiting
     """
-    server.logger.info("【 MCDR stop event 】")
+    server.logger.info("【-- MCDR stop event --】")

@@ -5,7 +5,7 @@ mcdr_listener_ws_server:
     player_only: "此命令只能由玩家执行"
     image_handler_not_initialized: "图片处理器未初始化"
   player:
-    leave_broadcast: "Bye {player}"
+    leave_broadcast: "{player} 离开了服务器"
   image:
     entry_label: "[图片:{idx}]"
     entry_label_plain: "[图片:{idx}]"

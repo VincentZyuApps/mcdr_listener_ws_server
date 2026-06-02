@@ -25,7 +25,7 @@ class ImageCache:
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
             server.logger.info(
-                f"【 Image cache 】 created cache directory: {cache_dir}"
+                f"【-- Image cache --】 created cache directory: {cache_dir}"
             )
 
     def _build_host_map(self, whitelist: list[Any]) -> None:
@@ -65,11 +65,11 @@ class ImageCache:
                     removed += 1
             except OSError as error:
                 self.server.logger.warning(
-                    f"【 Image cache 】 failed to remove expired cache file {entry.path}: {error}"
+                    f"【-- Image cache --】 failed to remove expired cache file {entry.path}: {error}"
                 )
         if removed > 0:
             self.server.logger.info(
-                f"【 Image cache 】 removed {removed} expired cache file(s)"
+                f"【-- Image cache --】 removed {removed} expired cache file(s)"
             )
 
     def is_url_allowed(self, url: str) -> bool:
@@ -91,13 +91,13 @@ class ImageCache:
         cache_path = os.path.join(self.cache_dir, f"{cache_key}.jpg")
 
         if os.path.exists(cache_path):
-            self.server.logger.info(f"【 Image cache 】 hit cache: {cache_key}")
+            self.server.logger.info(f"【-- Image cache --】 hit cache: {cache_key}")
             with open(cache_path, "rb") as f:
                 return f.read()
 
         proxies = self._get_proxy_for_host(hostname)
         proxy_info = f" via proxy {proxies['http']}" if proxies else " (direct)"
-        self.server.logger.info(f"【 Image download 】 {url[:100]}...{proxy_info}")
+        self.server.logger.info(f"【-- Image download --】 {url[:100]}...{proxy_info}")
 
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"

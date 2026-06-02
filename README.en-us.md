@@ -44,7 +44,7 @@ Supports select Minecraft Java server distributions managed by MCDReforged.
 
 #### **→ Chat Platform → MC Server**
 - Forward text messages into the game
-- Render image messages as in-game `text_display`, using `!!view_image` command
+- Image messages are broadcast to **all online players** as clickable tellraw text; clicking triggers `!!view_image` to render as `text_display` entities
 ##### **QQ (OneBot v11)**: ![](docs/images/preview-onebotv11-chat-platform-to-mc-server.png)
 ##### **Discord**: ![](docs/images/preview-discord-chat-platform-to-mc-server.png)
 
@@ -59,6 +59,31 @@ Supports select Minecraft Java server distributions managed by MCDReforged.
 #### **→ Chat Platform → MC Server (Remote Command Execution)**
 - Execute MC server RCON commands from the chat platform, results sent back to chat
 ##### **QQ (OneBot v11)**: ![](docs/images/preview-exec-rcon-command-at-chat-platform.png)
+
+## 🚀 3-Minute Quick Start
+
+### Step 1: Configure WebSocket Service
+
+1. Place the plugin in MCDR's plugin directory, install dependencies: `uv pip install -r requirements.txt`
+2. Load the plugin, edit the generated `config/mcdr_listener_ws_server/config.yml`
+3. Set `ws_token` to your own password
+4. Ensure `host` (default `0.0.0.0`) and `port` (default `60601`) are accessible from the client
+
+### Step 2: Configure Koishi Client
+
+Install `mclistener-ws-client` in Koishi, configure:
+- `wsServerUrl`: point to this plugin's WebSocket address
+- `wsToken`: must match server's `ws_token`
+- `sourcePlatformList` / `targetPlatformChannelList`: your groups/channels
+
+### Step 3: Verify
+
+- Send a message in the group → it should appear in-game as `[GroupName] (GroupID) Nickname: Message`
+- Speak in-game → the group should receive the chat message
+
+> 💡 Image rendering and remote commands require additional RCON setup (see below).
+
+---
 
 ## ⚠️ Prerequisite: Enable RCON
 
@@ -96,9 +121,9 @@ Place the plugin in MCDR's plugin directory and ensure dependencies are installe
 - `requests >= 2.32.0`
 
 ```bash
-git clone https://github.com/VincentZyuApps/mcdr_listener_ws_server
+git clone https://github.com/VincentZyuApps/mcdr_listener_ws_server ./plugins/mcdr_listener_ws_server
 # or use mirror in China
-git clone https://gitee.com/vincent-zyu/mcdr_listener_ws_server.git
+git clone https://gitee.com/vincent-zyu/mcdr_listener_ws_server.git ./plugins/mcdr_listener_ws_server
 ```
 
 ```powershell
@@ -224,3 +249,16 @@ The server will respond with the execution result:
     "result": "..."
 }
 ```
+
+---
+
+## ⚠️ Known Limitations
+
+- **Image hosts must be whitelisted**: Image URLs must be in `image_host_whitelist` to be downloaded/rendered
+- **`!!view_image` global cooldown**: Server-wide cooldown (default 5.5s) between command uses
+- **Remote command needs both sides**: Requires both `enable_remote_exec_command` on server and client-side config
+- **Windows encoding**: On Windows, set MCDR's `config.yml` encoding to `GBK` to avoid emoji issues
+
+## 📂 Event Logs
+
+The plugin automatically logs player join/leave events to JSON files under `logs/{date}/player_come_go/` for retrospective review.

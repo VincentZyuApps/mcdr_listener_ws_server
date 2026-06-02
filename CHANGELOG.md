@@ -4,6 +4,179 @@
 > 版本划分优先以 `plugin.json` 中真实出现过的 `version` 为准；未改动版本号但有独立提交的内容，会在相邻版本中单独注明。  
 > 本项目在近几个版本中，除了功能迭代，也持续推进了 **从“直接拼接原版字符串/命令”到“更多使用 MCDR API、RText、翻译文本、模块化结构”** 的风格演进，这里也一并记录。 
 
+## [0.6.3-beta.2] - 2026-06-02
+
+### 🎉 版本概览
+- 🚀 当前最新版本推进至 `0.6.3-beta.2`，重点放在配置反序列化兜底与安装文档补强。
+- 🛡️ 配置加载开始考虑“旧配置 / 手改配置 / 字段结构升级”下的兼容失败场景，启动容错更稳。
+- 📖 README 安装流程补上 GitHub / Gitee `git clone` 指令，首次部署路径更清楚。
+
+### 🔧 Changed
+- ⚙️ `config.py` 不再直接 `target_class=PluginConfig` 反序列化，而是先读取原始配置，再手动 `PluginConfig.deserialize(raw)`。
+- 🛡️ 当反序列化失败时，会记录 warning 并回退到默认 `PluginConfig()`，降低配置结构升级后直接启动失败的风险。
+- 📝 中英文 README 的 Installation 段落补充 GitHub / Gitee 克隆命令，减少新用户手动找仓库地址的步骤。
+
+### 💡 阶段观察
+- 🪜 这一版不属于“大功能”版本，更像是为前一个 `0.6.3-beta.1` 的新配置项与文档重构做收尾。
+- ✅ 对维护者来说，这种“补兜底 + 补文档入口”的提交很关键，能降低配置升级时的炸服概率。
+
+---
+
+## [0.6.3-beta.1] - 2026-06-02
+
+### 🎉 版本概览
+- ⏱️ `!!view_image` 新增全局冷却控制，避免玩家短时间重复触发图片渲染。
+- 🌍 冷却提示同步接入中英文语言文件，并通过 `RText` 提供更明显的剩余等待反馈。
+- 🖼️ README 的预览图区分为 OneBot v11 与 Discord 两套截图，文档指向性更明确。
+
+### ✨ Added
+- ⌛ 新增 `view_image_cooldown_ms` 配置项，默认 `5555ms`。
+- 🚦 `ImageHandler.view_image()` 增加服务端级别冷却检查，限制图片渲染命令的触发频率。
+- 🈯 冷却中的提示文本接入 `lang/zh_cn.yml` 与 `lang/en_us.yml`，并使用带颜色的 `RText` 输出。
+
+### 📝 Docs
+- 🖼️ 文档预览图拆分为 OneBot v11 / Discord 两组，分别展示“聊天平台 -> MC”与“MC -> 聊天平台”的链路。
+- 🏷️ README 标题层级重排为 `h4/h5` 为主，页面结构更统一。
+- 🎨 Koishi badge 从 `flat-square` 切换为 `flat` 风格，视觉风格与其余徽章更接近。
+
+### 💡 阶段观察
+- 🎯 这一版把图片功能从“能执行”进一步推进到“能控制频率、能明确反馈、文档能解释清楚”。
+- 📌 从交互层面看，冷却提示继续延续了项目向 `RText` / i18n / 结构化反馈靠拢的方向。
+
+---
+
+## [0.6.2-beta.1] - 2026-06-02
+
+### 🎉 版本概览
+- 🧼 新增消息空白压缩开关，开始系统处理跨平台文本中的换行、制表符与脏空白。
+- 🖼️ 图片渲染坐标计算从逐像素依赖 `@s`，重构为优先基于 RCON 获取玩家位置和视角的固定位置模式。
+- ⚙️ 文档和默认配置同步更新，结构化 `image_host_whitelist` 写法正式进入说明示例。
+
+### ✨ Added
+- 🧽 新增 `strip_message_whitespace` 配置项，默认 `true`。
+- 📡 `WebSocketHandler` 与 `message_formatter.py` 注入该配置，在发送前对群名、昵称、正文做空白压缩。
+
+### 🔨 Refactor
+- 📍 `image_renderer.py` 改为优先通过 RCON 获取玩家坐标与朝向，再计算每个像素对应的世界坐标。
+- 🧠 这种固定位置渲染方式避免了 `@s` 逐像素执行带来的性能和定位问题。
+- 🔁 当 RCON 获取失败时，仍保留回退到 `@s` 的兼容路径，没有把旧运行环境直接切断。
+
+### 📝 Docs
+- 📋 `default_config.yml` 增补 `strip_message_whitespace` 注释。
+- 🧾 中英文 README 配置表更新，并把 `image_host_whitelist` 示例切换为结构化 YAML 条目。
+
+### 💡 阶段观察
+- ⚖️ 这是一个“内部实现重构幅度大于表面功能增量”的版本。
+- 🚀 对图片渲染链路来说，固定位置模式是一次明显的工程化提升，尤其有利于后续继续优化性能和显示稳定性。
+
+---
+
+## [0.6.1-beta.1] - 2026-06-02
+
+### 🎉 版本概览
+- 🌐 图片下载白名单从“只允许 host”升级为“按 host 单独配置代理”，开始显式兼容 Discord CDN 等特殊来源。
+- 🧩 `image_host_whitelist` 从简单字符串列表演进为结构化配置项，配置表达能力明显增强。
+- 📖 README 也同步补强 Koishi 接入与互通架构说明，文档不再只围绕 OneBot 场景。
+
+### ✨ Added
+- 🧱 新增 `ImageHostEntry` 数据结构，白名单条目支持 `host + proxy`。
+- 🌍 默认配置加入 `cdn.discordapp.com` 与 `media.discordapp.net` 两个 Discord CDN 域名示例。
+- 🔀 默认示例为 Discord CDN 走 `http://127.0.0.1:7890` 代理，展示了按来源分流下载的能力。
+
+### 🔧 Changed
+- 🖼️ `image_cache.py` 新增 host 映射与代理选择逻辑，下载图片时可按域名动态决定是否走代理。
+- 🧩 `image_handler.py` 的类型注解和白名单处理同步适配新结构。
+- 📚 README 中补充互通架构标题、Koishi 接入说明以及 OneBot v11 / Discord Bot API 场景描述。
+
+### 💡 阶段观察
+- 📡 这一版说明项目已经从“本地白名单能用就行”走向“不同平台资源地址需要不同网络策略”的现实部署阶段。
+- 🛠️ 配置模型结构化之后，后续继续增加每域名自定义行为也更容易扩展。
+
+---
+
+## [0.6.0-beta.1] - 2026-06-02
+
+### 🎉 版本概览
+- 🏷️ 版本号从 `0.5.0-beta.6` 升到 `0.6.0-beta.1`，更多是阶段性里程碑切换。
+- 📝 插件描述与 README socialify banner 同步更新，仓库对外展示口径统一。
+- 🧪 同期新增一篇测试单元相关开发记录，说明开始关注后续测试建设。
+
+### 🔧 Changed
+- 📦 `mcdreforged.plugin.json` 版本与中英文描述文本同步更新。
+- 🖼️ `README.md` / `README.en-us.md` 的 socialify banner 描述随版本升级调整。
+- 🔁 `ws_server.py` 把入站消息类型从 `group_to_server` / `command` 改成 `chat_platform_to_server` / `external_command_to_server`，协议命名更贴近双向桥接语义。
+- 📚 `.github/workflows/build.md` 中 CI/CD 关键词表格文案做了细化整理，同时仓库补入一篇测试思路草稿。
+
+### 💡 阶段观察
+- 🚩 这一版本身不以功能增量见长，更像是把 `0.5.x` 末期连续功能更新打包进入 `0.6.x` 阶段。
+
+---
+
+## [0.5.0-beta.6] - 2026-06-02
+
+### 🐛 Fix
+- 🧰 恢复 `build.yml` 中误删的 `check` job，修补工作流完整性。
+- ✅ 新增 `.github/workflows/check_yaml.sh`，为本地和 CI 提供 YAML 语法检查脚本。
+
+### 💡 阶段观察
+- 🔍 这类修复虽然不直接影响插件功能，但对发版前发现 workflow / YAML 配置问题很重要。
+
+---
+
+## [0.5.0-beta.5] - 2026-06-02
+
+### 🔧 Changed
+- 📝 修复 release 模板里双 `v` 前缀问题，发布页版本展示更规范。
+- 📦 release 模板中的下载链接、tag 链接与产物文件名统一改成不重复拼接 `v` 前缀。
+- 📥 release 模板的安装部分补上 GitHub / Gitee `git clone` 指令，并提示首次加载后会自动生成配置文件。
+- 🧹 从 `build.yml` 中移除已拆分出去的 `check` / `sync-gitee-code` 片段，职责边界和前一版的新 workflow 结构保持一致。
+- 🎨 README 新增 Python logo 的 MCDR badge、Spigot / Paper 跳转链接，并更新插件描述文案与 QQ 群链接。
+
+### 💡 阶段观察
+- 📚 这是一个明显偏“发版体验 + 仓库展示”优化的版本，说明项目开始更认真地打磨外部使用入口。
+
+---
+
+## [0.5.0-beta.4] - 2026-06-02
+
+### 🔨 Refactor
+- 🔀 将 `sync-gitee-code` 从 `build.yml` 中拆分为独立的 `sync-gitee-code.yml` workflow。
+- 🧱 `build.yml` 重新聚焦在 build / release 本身，职责边界更清楚。
+
+### 📝 Docs
+- 🌳 `build.md` 的流水线阶段图恢复为更直观的树状结构。
+- 🧭 mermaid 流程图拆成 `build.yml` 和 `sync-gitee-code.yml` 两部分，更贴合实际执行路径。
+- 🎨 Gitee 节点统一为中文标注“Gitee码云”并调整配色。
+
+### 💡 阶段观察
+- ⚙️ 这一版体现的是 CI/CD 结构整理能力，而不是插件运行时功能变化。
+
+---
+
+## [0.5.0-beta.2 / beta.3] - 2026-06-02
+
+### 🎉 版本概览
+- 📦 这一阶段围绕发版规范化展开，补齐 LICENSE、release 模板、tag 触发规则与插件元数据整理。
+- 🧾 `plugin.json` 逐步从简单字段集合，演进为更贴近正式发布要求的元数据文件。
+- 🏷️ 值得注意的是：`git tag` 为 `v0.5.0-beta.2`，但该提交里的 `mcdreforged.plugin.json` 实际已写成 `0.5.0-beta.3`，仓库历史存在一次 tag / 文件版本号不完全一致的情况。
+- 🧪 同一阶段还有一次不改版本号的描述更新提交，用来验证 GitHub CI 在不匹配关键词时是否跳过 workflow。
+
+### 🔧 Changed
+- ⚖️ 新增 MIT `LICENSE`，仓库授权信息正式化。
+- 🧩 `mcdreforged.plugin.json` 调整为更规范的发布形态：`link` 指向 GitHub、`description` 改为中英文字典，并把 `LICENSE` 加入资源列表。
+- 🧹 清理 `__init__.py` 中残留的 counter 模板代码，降低脚手架痕迹。
+- 🏷️ workflow 新增 `v*` tag 触发 release，并把 release notes 生成逻辑切换为读取 `.github/release_template.md` 模板。
+
+### 📝 Docs
+- 📚 新增发版准备清单 dev note。
+- 🗺️ `build.md` 同步更新 tag 触发说明、完整发版流程和流水线标题。
+- 🪧 随后的无 tag 提交补充了 Token 认证、图片域名白名单、RCON 远程执行命令等描述文本，并专门测试 CI 关键词过滤行为。
+
+### 💡 阶段观察
+- 🛠️ 这一版标志着项目开始认真经营“怎么发布、怎么展示、怎么自动化产物生成”，不再只是代码能跑即可。
+
+---
+
 ## [0.4.0-beta.5+20260601] - 2026-06-01 ~ 2026-06-02
 
 ### 🎉 版本概览
