@@ -1,10 +1,14 @@
 {
 	"id": "mcdr_listener_ws_server",
-	"version": "0.5.0-beta.1+20260602",
+	"version": "0.5.0-beta.2",
 	"name": "mcdr_listener_ws_server",
-	"description": "🌐💬📡 群服互通，不止于文字。在 MC 服务器开启 WebSocket 服务，将玩家聊天和进出服事件推送到聊天平台；同时接收平台文字与图片消息，图片以 display 实体在游戏内渲染展示。🎮🔗",
+	"description": {
+		"en_us": "Group-server bridge beyond text: WebSocket server for MC, forwarding player chat/join/leave events to chat platforms; receiving text and images from platforms with in-game display entity rendering.",
+		"zh_cn": "群服互通，不止于文字：在 MC 服务器开启 WebSocket 服务，将玩家聊天和进出服事件推送到聊天平台；接收平台文字与图片消息，图片以 display 实体在游戏内渲染展示。"
+	},
+	"archive_name": "mcdr_listener_ws_server-v{version}",
 	"author": "VincentZyu",
-	"link": "https://gitee.com/vincent-zyu/mcdr_listener_ws_server",
+	"link": "https://github.com/VincentZyuApps/mcdr_listener_ws_server",
 	"dependencies": {
 		"mcdreforged": ">=2.13.0"
 	},
@@ -15,6 +19,7 @@
 	],
 	"resources": [
 		"lang",
-		"resources"
+		"resources",
+		"LICENSE"
 	]
 }

@@ -13,27 +13,13 @@ from .image_handler import ImageHandler
 ws_handler = None
 image_handler = None
 
-# variant for functionality demo
-counter = 0
-# player_count = 0
-
 plugin_config = None
 player_logger = None
 server_status_logger = None
 
 
 def on_load(server: PluginServerInterface, old_module):
-    """
-    Do some clean up when your plugin is being loaded
-    Like migrating data, reading config file or adding help messages
-    old_module is the previous plugin instance. If the plugin is freshly loaded it will be None
-    """
-    if old_module is not None:
-        counter = old_module.counter + 1
-    else:
-        counter = 1
-    msg = f"【 Plugin loaded 】 count = {counter}"
-    server.logger.info(msg)
+    """Plugin loaded"""
 
     global plugin_config, player_logger, server_status_logger, image_handler
     plugin_config = load_config(server)
