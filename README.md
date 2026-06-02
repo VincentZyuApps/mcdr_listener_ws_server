@@ -95,6 +95,12 @@ rcon:
 - `Pillow >= 10.0.0`
 - `requests >= 2.32.0`
 
+```bash
+git clone https://github.com/VincentZyuApps/mcdr_listener_ws_server
+# 或国内镜像
+git clone https://gitee.com/vincent-zyu/mcdr_listener_ws_server.git
+```
+
 ```powershell
 uv pip install mcdreforged
 uv pip install -r requirements.txt

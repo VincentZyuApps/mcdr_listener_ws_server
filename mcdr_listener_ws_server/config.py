@@ -83,4 +83,11 @@ def ensure_config_file(server: PluginServerInterface) -> Path:
 
 def load_config(server: PluginServerInterface) -> PluginConfig:
     ensure_config_file(server)
-    return server.load_config_simple(_CONFIG_FILE_NAME, target_class=PluginConfig)
+    raw = server.load_config_simple(_CONFIG_FILE_NAME)
+    try:
+        return PluginConfig.deserialize(raw)
+    except Exception as e:
+        server.logger.warning(
+            f"【 Config 】 failed to deserialize config: {e}, using defaults"
+        )
+        return PluginConfig()

@@ -95,6 +95,12 @@ Place the plugin in MCDR's plugin directory and ensure dependencies are installe
 - `Pillow >= 10.0.0`
 - `requests >= 2.32.0`
 
+```bash
+git clone https://github.com/VincentZyuApps/mcdr_listener_ws_server
+# or use mirror in China
+git clone https://gitee.com/vincent-zyu/mcdr_listener_ws_server.git
+```
+
 ```powershell
 uv pip install mcdreforged
 uv pip install -r requirements.txt
