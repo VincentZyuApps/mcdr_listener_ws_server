@@ -4,6 +4,11 @@ from pathlib import Path
 from mcdreforged.api.all import PluginServerInterface, Serializable
 
 
+class ImageHostEntry(Serializable):
+    host: str
+    proxy: str = ""
+
+
 class PluginConfig(Serializable):
     # WebSocket listen address
     host: str = "0.0.0.0"
@@ -38,11 +43,12 @@ class PluginConfig(Serializable):
     # How long cached images stay on disk, in seconds
     image_cache_ttl_sec: int = 180
 
-    # Allowed image hosts
-    image_host_whitelist: list[str] = [
-        "multimedia.nt.qq.com.cn",
-        "gxh.vip.qq.com",
-        # "127.0.0.1",
+    # Allowed image hosts, each entry can optionally specify a proxy for that host
+    image_host_whitelist: list[ImageHostEntry] = [
+        ImageHostEntry(host="multimedia.nt.qq.com.cn"),
+        ImageHostEntry(host="gxh.vip.qq.com"),
+        ImageHostEntry(host="cdn.discordapp.com", proxy="http://127.0.0.1:7890"),
+        ImageHostEntry(host="media.discordapp.net", proxy="http://127.0.0.1:7890"),
     ]
 
 

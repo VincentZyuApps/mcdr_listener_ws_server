@@ -1,5 +1,6 @@
 """图片处理模块 - 下载、转换、展示图片"""
 
+from typing import Any
 from urllib.parse import urlparse
 from mcdreforged.api.all import *
 
@@ -19,7 +20,7 @@ class ImageHandler:
         image_max_side_length: int = 64,
         image_duration_sec: int = 10,
         image_cache_ttl_sec: int = 180,
-        image_host_whitelist: list[str] | None = None,
+        image_host_whitelist: list[Any] | None = None,
     ):
         self.server = server
         self.cache_dir = cache_dir

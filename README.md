@@ -18,14 +18,24 @@
 
 ---
 
+## 📡 互通架构
+
+### 聊天平台一侧
+
 聊天平台 **图文消息** ⇄ Minecraft Java服务器 **文字消息与进出服事件** 的群服互通插件。
 
-支持 Koishi Bot 接入，理论上 Koishi 支持的大部分聊天平台均可使用（QQ OneBot v11 / Kook / Discord / Telegram）。
-> 已有现成的Koishi 插件: https://github.com/VincentZyuApps/koishi-plugin-mclistener-ws-client
+支持 Koishi Bot 接入，理论上 Koishi 支持的大部分聊天平台均可使用。
+> 已有现成的 Koishi 插件: [![Koishi Plugin](https://img.shields.io/badge/Koishi-Plugin-5546a3?style=flat-square&logo=koishi&logoColor=white&labelColor=6c5cb5)](https://koishi.chat) https://github.com/VincentZyuApps/koishi-plugin-mclistener-ws-client
 
-> 我自己的测试环境和生产环境: QQ OneBot V11 / Discord
+- **QQ 接入（OneBot v11 协议端）**：Koishi 通过 `@koishijs/plugin-adapter-onebot` 适配器，对接 OneBot v11 协议的实现端（如 [LLOneBot](https://github.com/LLOneBot/LLOneBot)、[NapCat](https://github.com/NapNeko/NapCatQQ)、[Lagrange.OneBot](https://github.com/LagrangeDev/Lagrange.Core) 等），由协议端连接 QQ 服务器，实现 QQ 群消息的双向互通。
+
+- **Discord 接入（Discord Bot API）**：Koishi 通过 `@koishijs/plugin-adapter-discord` 适配器，在 Discord Developer Portal 创建 Bot 应用并获取 Token，直连 Discord Gateway API，实现 Discord 频道消息的双向互通。
+
+> 我自己的测试环境和生产环境: QQ（OneBot v11 / LLOneBot）/ Discord
 
 > 当然你也可以自己编写插件把他接入到其他的Bot框架，比如[Koishi](https://koishi.chat/zh-CN/manual/starter/boilerplate.html)，[Nonebot2](https://nonebot.dev/docs/quick-start)，[Astrbot](https://docs.astrbot.app/deploy/astrbot/docker.html)等等，或者其他任何形式的Web应用的 [WebSocket](https://github.com/websockets/ws)客户端接入。
+
+### Minecraft Java服务器一侧
 
 支持 MCDReforged 部分 Minecraft Java 服务端发行版。
 > 我自己的测试环境和生产环境: [Spigot](https://www.spigotmc.org/) / [Paper](https://papermc.io/) 1.21.8

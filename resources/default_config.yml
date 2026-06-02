@@ -54,7 +54,16 @@ image_cache_ttl_sec: 180
 
 # 🛡️ 只能从这里列出的域名下载图片喔~
 # 📋 没在名单里的 host 不给下！哼~
+# 📡 每个域名可以单独配 proxy，为空就不走代理直连
+# 🌐 默认代理 http://127.0.0.1:7890（如 Discord 等境外 CDN 需要代理）
+# 📝 格式：
+#   - host: example.com
+#     proxy: "http://127.0.0.1:7890"  # 可选，留空=直连
 image_host_whitelist:
-  - multimedia.nt.qq.com.cn
-  - gxh.vip.qq.com
-  # - 127.0.0.1
+  - host: multimedia.nt.qq.com.cn
+  - host: gxh.vip.qq.com
+  - host: cdn.discordapp.com
+    proxy: http://127.0.0.1:7890
+  - host: media.discordapp.net
+    proxy: http://127.0.0.1:7890
+  # - host: 127.0.0.1

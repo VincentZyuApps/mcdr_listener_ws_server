@@ -18,14 +18,24 @@
 
 ---
 
+## 🔗 Bridge Architecture
+
+### Chat Platform Side
+
 A group-server bridge plugin: **text & images** from chat platforms ⇄ **chat & join/leave events** from Minecraft Java servers.
 
-Supports Koishi Bot — theoretically works with most platforms Koishi supports (QQ OneBot v11 / Kook / Discord / Telegram).
-> Ready-made Koishi plugin: https://github.com/VincentZyuApps/koishi-plugin-mclistener-ws-client
+Supports Koishi Bot — theoretically works with most platforms Koishi supports.
+> Ready-made Koishi plugin: [![Koishi Plugin](https://img.shields.io/badge/Koishi-Plugin-5546a3?style=flat-square&logo=koishi&logoColor=white&labelColor=6c5cb5)](https://koishi.chat) https://github.com/VincentZyuApps/koishi-plugin-mclistener-ws-client
 
-> My test & production environment: QQ OneBot V11 / Discord
+- **QQ via OneBot v11 Protocol**: Koishi's `@koishijs/plugin-adapter-onebot` adapter connects to a OneBot v11 implementation (e.g., [LLOneBot](https://github.com/LLOneBot/LLOneBot), [NapCat](https://github.com/NapNeko/NapCatQQ), [Lagrange.OneBot](https://github.com/LagrangeDev/Lagrange.Core)), which bridges to QQ servers for bidirectional group message relay.
+
+- **Discord via Discord Bot API**: Koishi's `@koishijs/plugin-adapter-discord` adapter connects directly to Discord Gateway API using a Bot Token from Discord Developer Portal, enabling bidirectional channel message relay.
+
+> My test & production environment: QQ (OneBot v11 / LLOneBot) / Discord
 
 > You can also write your own plugin to integrate with other bot frameworks, such as [Koishi](https://koishi.chat/zh-CN/manual/starter/boilerplate.html), [Nonebot2](https://nonebot.dev/docs/quick-start), [Astrbot](https://docs.astrbot.app/deploy/astrbot/docker.html), or any other web application via a [WebSocket](https://github.com/websockets/ws) client.
+
+### Minecraft Java Server Side
 
 Supports select Minecraft Java server distributions managed by MCDReforged.
 > My test & production environment: [Spigot](https://www.spigotmc.org/) / [Paper](https://papermc.io/) 1.21.8
