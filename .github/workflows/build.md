@@ -8,11 +8,11 @@ CI/CD 流水线完全由 **commit 信息中的关键词** 驱动。推送到 `ma
 
 ## 🔑 关键词
 
-| Commit 信息中的关键词 | 打包 .mcdr | GitHub Release | Gitee 同步 |
+| git行为 | 打包 .mcdr | GitHub Release | Gitee 同步 |
 |----------------------|:---:|:---:|:---:|
-| `build action` | ✅ | ❌ | ❌ |
-| `build release` | ✅ | ✅ | ✅ |
-| 推送 `v*` tag（如 `vx.y.z`） | ✅ | ✅ | ✅ |
+| 推送的commit信息中含有`build action` | ✅ | ❌ | ❌ |
+| 推送的commit信息中含有`build release` | ✅ | ✅ | ✅ |
+| 推送形如`v*`格式的tag（如 `vx.y.z`） | ✅ | ✅ | ✅ |
 
 ### 使用示例
 

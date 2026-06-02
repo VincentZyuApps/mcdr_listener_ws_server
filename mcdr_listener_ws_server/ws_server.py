@@ -76,9 +76,9 @@ class WebSocketHandler:
             data = json.loads(message)
             msg_type = data.get("type")
 
-            if msg_type == "command":
+            if msg_type == "external_command_to_server":
                 await self._handle_command(data, websocket)
-            elif msg_type == "group_to_server":
+            elif msg_type == "chat_platform_to_server":
                 # 处理从QQ群转发到服务器的消息
                 nickname = data.get("nickname", "未知用户")
                 message_content = sanitize_for_console_encoding(data.get("message", ""))

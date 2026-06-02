@@ -1,4 +1,4 @@
-![mcdr_listener_ws_server](https://socialify.git.ci/VincentZyuApps/mcdr_listener_ws_server/image?custom_description=%F0%9F%8C%90%F0%9F%92%AC%F0%9F%93%A1+Group-Server+bridge%2C+beyond+text.+Start+a+WebSocket+server+on+MC%2C+push+player+chat+and+join%2Fleave+events+to+chat+platforms%3B+receive+text+and+images+from+platforms%2C+render+images+as+display+entities+in-game.%F0%9F%8E%AE%F0%9F%94%97&description=1&font=JetBrains+Mono&forks=1&issues=1&language=1&name=1&owner=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F63280128%3Fs%3D200%26v%3D4&name=1&owner=1&pattern=Plus&pulls=1&stargazers=1&theme=Auto)
+![mcdr_listener_ws_server](https://socialify.git.ci/VincentZyuApps/mcdr_listener_ws_server/image?custom_description=%F0%9F%93%A1%20Group-server%20bridge,%20beyond%20text%3A%20bi-directional%20game%20events%20and%20group%20messages,%20in-game%20image%20rendering,%20RCON%20remote%20execution&description=1&font=JetBrains+Mono&forks=1&issues=1&language=1&name=1&owner=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F63280128%3Fs%3D200%26v%3D4&name=1&owner=1&pattern=Plus&pulls=1&stargazers=1&theme=Auto)
 
 # mcdr_listener_ws_server
 
@@ -10,7 +10,7 @@
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/VincentZyuApps/mcdr_listener_ws_server)
 [![Gitee](https://img.shields.io/badge/Gitee-C71D23?style=for-the-badge&logo=gitee&logoColor=white)](https://gitee.com/vincent-zyu/mcdr_listener_ws_server)
 
-[![QQ群](https://img.shields.io/badge/QQ群-1085190201-12B7F5?style=flat-square&logo=qq&logoColor=white)](https://qm.qq.com/q/ZN7fxZ3qCq)
+[![QQ群](https://img.shields.io/badge/QQ群-1085190201-12B7F5?style=flat-square&logo=qq&logoColor=white)](https://qm.qq.com/q/4vjto4V7Di)
 
 <p><del>💬 Plugin usage / 🐛 Bug reports / 👨‍💻 Dev discussions, join QQ group: <b>259248174</b> 🎉 (this group is dead)</del> </p> 
 <p>💬 Plugin usage / 🐛 Bug reports / 👨‍💻 Dev discussions, join QQ group: <b>1085190201</b> 🎉</p>
@@ -142,7 +142,7 @@ Send the following JSON messages from the client to the server.
 
 ```json
 {
-    "type": "group_to_server",
+    "type": "chat_platform_to_server",
     "nickname": "username",
     "message": "message content",
     "group_id": "123456",
@@ -162,7 +162,7 @@ Send the following JSON messages from the client to the server.
 
 ```json
 {
-    "type": "command",
+    "type": "external_command_to_server",
     "command": "list"
 }
 ```
