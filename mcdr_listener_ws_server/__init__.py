@@ -33,6 +33,7 @@ def on_load(server: PluginServerInterface, old_module):
         image_duration_sec=plugin_config.image_duration_sec,
         image_cache_ttl_sec=plugin_config.image_cache_ttl_sec,
         image_host_whitelist=plugin_config.image_host_whitelist,
+        view_image_cooldown_ms=plugin_config.view_image_cooldown_ms,
     )
 
     global ws_handler

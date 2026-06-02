@@ -19,6 +19,7 @@ mcdr_listener_ws_server:
     rendering: "正在生成图片 ({width}x{height} = {pixel_count}像素)..."
     rendered: "图片已展示（{duration_sec}秒后消失）"
     default_summary: "图片"
+    cooldown: "!!view_image 冷却中，还剩 {remaining}s"
     entry_label_hash: "[图片#{idx}]"
   log:
     write_failed: "日志记录失败: {error}"

@@ -25,7 +25,7 @@
 聊天平台 **图文消息** ⇄ Minecraft Java服务器 **文字消息与进出服事件** 的群服互通插件。
 
 支持 Koishi Bot 接入，理论上 Koishi 支持的大部分聊天平台均可使用。
-> 已有现成的 Koishi 插件: [![Koishi Plugin](https://img.shields.io/badge/Koishi-Plugin-5546a3?style=flat-square&logo=koishi&logoColor=white&labelColor=6c5cb5)](https://koishi.chat) https://github.com/VincentZyuApps/koishi-plugin-mclistener-ws-client
+> 已有现成的 Koishi 插件: [![Koishi Plugin](https://img.shields.io/badge/Koishi-Plugin-6c5cb5?style=flat&logo=koishi&logoColor=white&labelColor=5546a3)](https://koishi.chat) https://github.com/VincentZyuApps/koishi-plugin-mclistener-ws-client
 
 - **QQ 接入（OneBot v11 协议端）**：Koishi 通过 `@koishijs/plugin-adapter-onebot` 适配器，对接 OneBot v11 协议的实现端（如 [LLOneBot](https://github.com/LLOneBot/LLOneBot)、[NapCat](https://github.com/NapNeko/NapCatQQ)、[Lagrange.OneBot](https://github.com/LagrangeDev/Lagrange.Core) 等），由协议端连接 QQ 服务器，实现 QQ 群消息的双向互通。
 
@@ -42,22 +42,23 @@
 
 ### 它能做什么
 
-**→ 聊天平台 → MC 服务器**
+#### **→ 聊天平台 → MC 服务器**
 - 文字消息转发到游戏内
-- 图片消息渲染为游戏内 `text_display`, 使用`!!view_image`指令（已实测 OneBot v11）
-![](docs/images/preview-chat-platform-to-mc-server.png)
+- 图片消息渲染为游戏内 `text_display`, 使用`!!view_image`指令
+##### **QQ（OneBot v11）**: ![](docs/images/preview-onebotv11-chat-platform-to-mc-server.png)
+##### **Discord**: ![](docs/images/preview-discord-chat-platform-to-mc-server.png)
 
-**→ MC 服务器 → 聊天平台**
+#### **→ MC 服务器 → 聊天平台**
 - 玩家聊天消息转发到平台
 - 玩家加入/退出服务器通知转发到平台
-![](docs/images/preview-mc-server-to-chat-platform.png)
+##### **QQ（OneBot v11）**: ![](docs/images/preview-mc-server-to-onebotv11-chat-platform.png)
 
-**→ MC 服务器内**
+#### **→ MC 服务器内**
 - 玩家可用 `!!view_image <url>` 命令手动查看远程图片
 
-**→ 聊天平台 → MC 服务器（远程命令执行）**
+#### **→ 聊天平台 → MC 服务器（远程命令执行）**
 - 通过聊天平台远程执行 MC 服务器 RCON 命令，结果回传至聊天平台
-![](docs/images/preview-exec-rcon-command-at-chat-platform.png)
+##### **QQ（OneBot v11）**: ![](docs/images/preview-exec-rcon-command-at-chat-platform.png)
 
 ## ⚠️ 前置条件：启用 RCON
 

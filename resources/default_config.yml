@@ -56,6 +56,10 @@ image_duration_sec: 10
 # ⌛ 单位是秒哦~
 image_cache_ttl_sec: 180
 
+# ⏱️ !!view_image 指令的全局冷却时间（毫秒）
+# 全服共享冷却，防止频繁请求
+view_image_cooldown_ms: 5555
+
 # 🛡️ 只能从这里列出的域名下载图片喔~
 # 📋 没在名单里的 host 不给下！哼~
 # 📡 每个域名可以单独配 proxy，为空就不走代理直连

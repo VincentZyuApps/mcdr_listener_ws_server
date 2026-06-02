@@ -25,7 +25,7 @@
 A group-server bridge plugin: **text & images** from chat platforms ⇄ **chat & join/leave events** from Minecraft Java servers.
 
 Supports Koishi Bot — theoretically works with most platforms Koishi supports.
-> Ready-made Koishi plugin: [![Koishi Plugin](https://img.shields.io/badge/Koishi-Plugin-5546a3?style=flat-square&logo=koishi&logoColor=white&labelColor=6c5cb5)](https://koishi.chat) https://github.com/VincentZyuApps/koishi-plugin-mclistener-ws-client
+> Ready-made Koishi plugin: [![Koishi Plugin](https://img.shields.io/badge/Koishi-Plugin-6c5cb5?style=flat&logo=koishi&logoColor=white&labelColor=5546a3)](https://koishi.chat) https://github.com/VincentZyuApps/koishi-plugin-mclistener-ws-client
 
 - **QQ via OneBot v11 Protocol**: Koishi's `@koishijs/plugin-adapter-onebot` adapter connects to a OneBot v11 implementation (e.g., [LLOneBot](https://github.com/LLOneBot/LLOneBot), [NapCat](https://github.com/NapNeko/NapCatQQ), [Lagrange.OneBot](https://github.com/LagrangeDev/Lagrange.Core)), which bridges to QQ servers for bidirectional group message relay.
 
@@ -42,22 +42,23 @@ Supports select Minecraft Java server distributions managed by MCDReforged.
 
 ### What It Does
 
-**→ Chat Platform → MC Server**
+#### **→ Chat Platform → MC Server**
 - Forward text messages into the game
-- Render image messages as in-game `text_display`, using `!!view_image` command (tested with OneBot v11)
-![](docs/images/preview-chat-platform-to-mc-server.png)
+- Render image messages as in-game `text_display`, using `!!view_image` command
+##### **QQ (OneBot v11)**: ![](docs/images/preview-onebotv11-chat-platform-to-mc-server.png)
+##### **Discord**: ![](docs/images/preview-discord-chat-platform-to-mc-server.png)
 
-**→ MC Server → Chat Platform**
+#### **→ MC Server → Chat Platform**
 - Forward player chat messages to the platform
 - Forward player join/leave notifications to the platform
-![](docs/images/preview-mc-server-to-chat-platform.png)
+##### **QQ (OneBot v11)**: ![](docs/images/preview-mc-server-to-onebotv11-chat-platform.png)
 
-**→ Inside MC Server**
+#### **→ Inside MC Server**
 - Players can use `!!view_image <url>` to view remote images manually
 
-**→ Chat Platform → MC Server (Remote Command Execution)**
+#### **→ Chat Platform → MC Server (Remote Command Execution)**
 - Execute MC server RCON commands from the chat platform, results sent back to chat
-![](docs/images/preview-exec-rcon-command-at-chat-platform.png)
+##### **QQ (OneBot v11)**: ![](docs/images/preview-exec-rcon-command-at-chat-platform.png)
 
 ## ⚠️ Prerequisite: Enable RCON
 

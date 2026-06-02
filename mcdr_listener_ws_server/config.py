@@ -44,6 +44,9 @@ class PluginConfig(Serializable):
     # How long cached images stay on disk, in seconds
     image_cache_ttl_sec: int = 180
 
+    # Cooldown for !!view_image command in milliseconds (server-wide)
+    view_image_cooldown_ms: int = 5555
+
     # Allowed image hosts, each entry can optionally specify a proxy for that host
     image_host_whitelist: list[ImageHostEntry] = [
         ImageHostEntry(host="multimedia.nt.qq.com.cn"),

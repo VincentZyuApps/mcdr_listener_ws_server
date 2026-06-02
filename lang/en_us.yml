@@ -19,6 +19,7 @@ mcdr_listener_ws_server:
     rendering: "Rendering image ({width}x{height} = {pixel_count} pixels)..."
     rendered: "Image displayed (will disappear after {duration_sec}s)"
     default_summary: "Image"
+    cooldown: "!!view_image on cooldown, {remaining}s remaining"
     entry_label_hash: "[Image#{idx}]"
   log:
     write_failed: "Failed to write log: {error}"
