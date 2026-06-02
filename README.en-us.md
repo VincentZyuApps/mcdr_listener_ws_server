@@ -5,7 +5,7 @@
 > **[📖 English](README.en-us.md)**
 > **[📖 中文](README.md)**
 
-[![MCDR](https://img.shields.io/badge/for-MCDReforged%202-fac00f?style=for-the-badge&labelColor=3876a9)](https://mcdreforged.com/zh-CN)
+[![MCDR](https://img.shields.io/badge/for-MCDReforged%202-fac00f?style=for-the-badge&labelColor=3876a9&logo=python&logoColor=white)](https://mcdreforged.com/zh-CN)
 
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/VincentZyuApps/mcdr_listener_ws_server)
 [![Gitee](https://img.shields.io/badge/Gitee-C71D23?style=for-the-badge&logo=gitee&logoColor=white)](https://gitee.com/vincent-zyu/mcdr_listener_ws_server)
@@ -22,17 +22,19 @@ A group-server bridge plugin: **text & images** from chat platforms ⇄ **chat &
 
 Supports Koishi Bot — theoretically works with most platforms Koishi supports (QQ OneBot v11 / Kook / Discord / Telegram).
 > Ready-made Koishi plugin: https://github.com/VincentZyuApps/koishi-plugin-mclistener-ws-client
+
 > My test & production environment: QQ OneBot V11 / Discord
-You can also write your own plugin to integrate with other bot frameworks, such as [Koishi](https://koishi.chat/zh-CN/manual/starter/boilerplate.html), [Nonebot2](https://nonebot.dev/docs/quick-start), [Astrbot](https://docs.astrbot.app/deploy/astrbot/docker.html), or any other web application via a [WebSocket](https://github.com/websockets/ws) client.
+
+> You can also write your own plugin to integrate with other bot frameworks, such as [Koishi](https://koishi.chat/zh-CN/manual/starter/boilerplate.html), [Nonebot2](https://nonebot.dev/docs/quick-start), [Astrbot](https://docs.astrbot.app/deploy/astrbot/docker.html), or any other web application via a [WebSocket](https://github.com/websockets/ws) client.
 
 Supports select Minecraft Java server distributions managed by MCDReforged.
-> My test & production environment: Spigot / Paper 1.21.8
+> My test & production environment: [Spigot](https://www.spigotmc.org/) / [Paper](https://papermc.io/) 1.21.8
 
 ### What It Does
 
 **→ Chat Platform → MC Server**
 - Forward text messages into the game
-- Render image messages as in-game `text_display` (tested with OneBot v11)
+- Render image messages as in-game `text_display`, using `!!view_image` command (tested with OneBot v11)
 ![](docs/images/preview-chat-platform-to-mc-server.png)
 
 **→ MC Server → Chat Platform**

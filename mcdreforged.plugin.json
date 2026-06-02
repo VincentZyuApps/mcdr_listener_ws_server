@@ -1,10 +1,10 @@
 {
 	"id": "mcdr_listener_ws_server",
-	"version": "0.5.0-beta.4",
+	"version": "0.5.0-beta.5",
 	"name": "mcdr_listener_ws_server",
 	"description": {
-		"en_us": "Group-server bridge beyond text: WebSocket server for MC with token auth, forwarding player chat/join/leave events to chat platforms; receiving text and images with in-game rendering and image host whitelist; and supporting remote command execution via RCON.",
-		"zh_cn": "群服互通，不止于文字：在 MC 服务器开启 WebSocket 服务，支持 Token 认证，将玩家聊天和进出服事件推送到聊天平台；接收平台文字与图片消息，图片以 display 实体渲染展示，支持图片域名白名单；还支持通过 RCON 远程执行服务器命令。"
+		"en_us": "📡 Group-server bridge, beyond text: bi-directional game events and group messages, in-game image rendering, RCON remote execution",
+		"zh_cn": "📡 群服互通网关，不止文字：游戏事件与群消息双向互通、图片消息游戏内渲染、RCON 远程命令执行"
 	},
 	"archive_name": "mcdr_listener_ws_server-v{version}",
 	"author": "VincentZyu",

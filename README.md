@@ -5,7 +5,7 @@
 > **[📖 中文](README.md)**
 > **[📖 English](README.en-us.md)**
 
-[![MCDR](https://img.shields.io/badge/for-MCDReforged%202-fac00f?style=for-the-badge&labelColor=3876a9)](https://mcdreforged.com/zh-CN)
+[![MCDR](https://img.shields.io/badge/for-MCDReforged%202-fac00f?style=for-the-badge&labelColor=3876a9&logo=python&logoColor=white)](https://mcdreforged.com/zh-CN)
 
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/VincentZyuApps/mcdr_listener_ws_server)
 [![Gitee](https://img.shields.io/badge/Gitee-C71D23?style=for-the-badge&logo=gitee&logoColor=white)](https://gitee.com/vincent-zyu/mcdr_listener_ws_server)
@@ -22,17 +22,19 @@
 
 支持 Koishi Bot 接入，理论上 Koishi 支持的大部分聊天平台均可使用（QQ OneBot v11 / Kook / Discord / Telegram）。
 > 已有现成的Koishi 插件: https://github.com/VincentZyuApps/koishi-plugin-mclistener-ws-client
+
 > 我自己的测试环境和生产环境: QQ OneBot V11 / Discord
-当然你也可以自己编写插件把他接入到其他的Bot框架，比如[Koishi](https://koishi.chat/zh-CN/manual/starter/boilerplate.html)，[Nonebot2](https://nonebot.dev/docs/quick-start)，[Astrbot](https://docs.astrbot.app/deploy/astrbot/docker.html)等等，或者其他任何形式的Web应用的 [WebSocket](https://github.com/websockets/ws)客户端接入。
+
+> 当然你也可以自己编写插件把他接入到其他的Bot框架，比如[Koishi](https://koishi.chat/zh-CN/manual/starter/boilerplate.html)，[Nonebot2](https://nonebot.dev/docs/quick-start)，[Astrbot](https://docs.astrbot.app/deploy/astrbot/docker.html)等等，或者其他任何形式的Web应用的 [WebSocket](https://github.com/websockets/ws)客户端接入。
 
 支持 MCDReforged 部分 Minecraft Java 服务端发行版。
-> 我自己的测试环境和生产环境: Spigot / Paper 1.21.8
+> 我自己的测试环境和生产环境: [Spigot](https://www.spigotmc.org/) / [Paper](https://papermc.io/) 1.21.8
 
 ### 它能做什么
 
 **→ 聊天平台 → MC 服务器**
 - 文字消息转发到游戏内
-- 图片消息渲染为游戏内 `text_display`（已实测 OneBot v11）
+- 图片消息渲染为游戏内 `text_display`, 使用`!!view_image`指令（已实测 OneBot v11）
 ![](docs/images/preview-chat-platform-to-mc-server.png)
 
 **→ MC 服务器 → 聊天平台**
