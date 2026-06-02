@@ -12,7 +12,7 @@ CI/CD 流水线完全由 **commit 信息中的关键词** 驱动。推送到 `ma
 |----------------------|:---:|:---:|:---:|
 | `build action` | ✅ | ❌ | ❌ |
 | `build release` | ✅ | ✅ | ✅ |
-| 推送 `v*` tag（如 `v0.5.0`） | ✅ | ✅ | ✅ |
+| 推送 `v*` tag（如 `vx.y.z`） | ✅ | ✅ | ✅ |
 
 ### 使用示例
 
@@ -24,8 +24,23 @@ git commit -m "feat: 添加新功能 build action"
 git commit -m "feat: 发布新版本 build release"
 
 # 推送 tag 自动打包+发布（无需关键词）
-git tag v0.5.0
-git push github v0.5.0
+git tag vx.y.z
+git push github vx.y.z
+```
+
+### 🚀 发版小连招
+
+```bash
+# 1. 提交代码
+git add -A
+git commit -m "vx.y.z-beta.w more commit messages..."
+git push github main
+
+# 2. 打 tag（版本号与 mcdreforged.plugin.json 一致）
+git tag vx.y.z-beta.w
+
+# 3. 推 tag → 自动触发 workflow 打包 + 发布 Release
+git push github vx.y.z-beta.w
 ```
 
 ## 📦 流水线阶段

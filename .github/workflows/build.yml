@@ -71,7 +71,7 @@ jobs:
 
   # ── Sync Code to Gitee ────────────────────────────────
   sync-gitee-code:
-    name: 【Gitee】Sync Code
+    name: 【Gitee码云】Sync Code
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     steps:
@@ -153,68 +153,33 @@ jobs:
           gh release delete "$VERSION" --yes --cleanup-tag 2>/dev/null || echo "No existing release to delete"
           sleep 3
 
-      - name: Generate release notes
+      - name: Generate release notes from template
         run: |
           VERSION="${{ needs.check.outputs.version }}"
           REPO="${{ github.repository }}"
           BASE_URL="https://github.com/${REPO}/releases/download/${VERSION}"
-
           PREV_TAG=$(git tag --sort=-v:refname | grep -v "^${VERSION}$" | head -1)
 
-          {
-            echo "## 📦 mcdr_listener_ws_server ${VERSION}"
-            echo ""
-            echo "群服互通 WebSocket 服务端插件。"
-            echo ""
-            echo "### ⬇️ Downloads"
-            echo ""
-            echo "| 文件 | 说明 |"
-            echo "|------|------|"
-            echo "| [\`.mcdr\` 插件](${BASE_URL}/mcdr_listener_ws_server-${VERSION}.mcdr) | MCDR 插件包，放入 plugins/ 目录即可 |"
-            echo ""
-            echo "### 📥 安装方法"
-            echo ""
-            echo "1. 下载 \`.mcdr\` 文件放入 MCDR 的 \`plugins/\` 目录"
-            echo "2. 确保已安装依赖："
-            echo ""
-            echo "\`\`\`bash"
-            echo "pip install mcdreforged websockets>=15.0.0 Pillow>=10.0.0 requests>=2.32.0"
-            echo "\`\`\`"
-            echo ""
-            echo "3. 重载插件：\`!!MCDR plg reload mcdr_listener_ws_server\`"
-            echo ""
-            echo "---"
-            echo ""
-            echo "### What's Changed"
-            echo ""
+          NOTES=$(cat .github/release_template.md)
+          NOTES="${NOTES//__VERSION__/$VERSION}"
+          NOTES="${NOTES//__REPO__/$REPO}"
+          NOTES="${NOTES//__BASE_URL__/$BASE_URL}"
+          NOTES="${NOTES//__BUILD_DATE__/$(date -u '+%Y-%m-%d %H:%M UTC')}"
 
-            if [ -n "$PREV_TAG" ]; then
-              echo "Changes since **${PREV_TAG}**:"
-              echo ""
-              git log "${PREV_TAG}..HEAD" --pretty=format:"- %s (\`%h\`)" --reverse
-            else
-              echo "All changes:"
-              echo ""
-              git log --pretty=format:"- %s (\`%h\`)" --reverse
-            fi
+          if [ -n "$PREV_TAG" ]; then
+            CHANGELOG_URL="https://github.com/${REPO}/compare/${PREV_TAG}...${VERSION}"
+          else
+            CHANGELOG_URL="https://github.com/${REPO}/commits/${VERSION}"
+          fi
+          NOTES="${NOTES//__CHANGELOG_URL__/$CHANGELOG_URL}"
 
-            echo ""
-            echo ""
-            echo "---"
-            echo ""
-            echo "### 📊 Build Info"
-            echo "- **Build date**: $(date -u '+%Y-%m-%d %H:%M UTC')"
-            echo "- **Commit**: [\`${GITHUB_SHA::7}\`](https://github.com/${REPO}/commit/${GITHUB_SHA})"
+          COMMIT_HASH="[\`${GITHUB_SHA::7}\`](https://github.com/${REPO}/commit/${GITHUB_SHA})"
+          NOTES="${NOTES//__COMMIT_HASH__/$COMMIT_HASH}"
 
-            if [ -n "$PREV_TAG" ]; then
-              echo ""
-              echo "**Full Changelog**: https://github.com/${REPO}/compare/${PREV_TAG}...${VERSION}"
-            else
-              echo ""
-              echo "**Full Changelog**: https://github.com/${REPO}/commits/${VERSION}"
-            fi
-          } > release_notes.md
+          COMMIT_LOG=$(git log "${PREV_TAG:+${PREV_TAG}..}HEAD" --pretty=format:"- %s (\`%h\`)" --reverse)
+          NOTES="${NOTES//__COMMIT_LOG__/$COMMIT_LOG}"
 
+          echo "$NOTES" > release_notes.md
           echo "📝 Generated release notes:"
           cat release_notes.md
 
@@ -231,7 +196,7 @@ jobs:
 
   # ── Sync Release to Gitee ─────────────────────────────
   sync-gitee-release:
-    name: 【Gitee】Sync Release
+    name: 【Gitee码云】Sync Release
     needs: [check, release]
     if: needs.check.outputs.should_release == 'true'
     runs-on: ubuntu-latest
