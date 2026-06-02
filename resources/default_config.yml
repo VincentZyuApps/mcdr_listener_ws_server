@@ -1,28 +1,59 @@
-# mcdr_listener_ws_server 默认配置
+# 🌟 mcdr_listener_ws_server 的 默认配置~ (*╹▽╹*)
 
-# 🌐 WebSocket 监听地址
+# ============================================
+# 🌐 一、WS 链接配置
+# ============================================
+
+# 🌐 WebSocket 要监听哪个地址捏~
 host: 0.0.0.0
 
-# 🔌 WebSocket 监听端口
+# 🔌 WebSocket 要用哪个端口哇~
 port: 60601
 
-# 📂 图片缓存目录
-# 可写相对路径，也可写绝对路径
+# 🔑 WebSocket 连接要不要 Token 鸭~
+# ✨ 空着就不校验啦；填了的话客户端要乖乖带着 token 来喔~ ws://ip:port?token=yourToken
+# ⚠️ 记得改掉默认的 test12345 哇！正式用一定要换一个自己的！🔑
+ws_token: "test12345"
+
+# ============================================
+# ⚡ 二、远程指令配置
+# ============================================
+
+# ⚡ 要不要开远程执行命令呀~
+# 🚫 默认关掉的哦，乱开会很危险滴！⚠️
+enable_remote_exec_command: false
+
+# 🛡️ 哪些命令可以远程执行呢~
+# 📝 空列表 = 不限制啦，比如 ["list", "say ", "time ", "weather "]
+remote_exec_command_whitelist: []
+
+# ⏱️ 命令跑太久会超时的（秒）~
+remote_exec_command_timeout_sec: 10
+
+# 📏 返回结果太长会被咔嚓掉哟（最大字符数）~
+remote_exec_result_max_length: 4000
+
+# ============================================
+# 🖼️ 三、图片处理配置
+# ============================================
+
+# 📂 图片临时放哪里好呢~
+# 🗂️ 相对路径绝对路径都可以用哒~
 cache_dir: ./cache/mcdr_listener_ws_server/images/
 
-# 📐 图片在游戏内渲染时的最大边长
+# 📐 图片在游戏里最大能渲染多大呢~
 image_max_side_length: 64
 
-# ⏱️ 图片在游戏内展示多久
-# 单位：秒
+# ⏱️ 图片要在游戏里亮多久吖~
+# ⌛ 单位是秒哦~
 image_duration_sec: 10
 
-# 🧹 图片缓存文件保留多久
-# 单位：秒
+# 🧹 缓存文件想留多久吖~
+# ⌛ 单位是秒哦~
 image_cache_ttl_sec: 180
 
-# 🛡️ 允许下载图片的域名白名单
-# 只有这里列出的 host 才能被下载和展示
+# 🛡️ 只能从这里列出的域名下载图片喔~
+# 📋 没在名单里的 host 不给下！哼~
 image_host_whitelist:
   - multimedia.nt.qq.com.cn
   - gxh.vip.qq.com

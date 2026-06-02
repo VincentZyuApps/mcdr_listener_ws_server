@@ -2,7 +2,8 @@
 
 # mcdr_listener_ws_server
 
-[🇨🇳 中文](README.md)
+> **[📖 English](README.en-us.md)**
+> **[📖 中文](README.md)**
 
 [![MCDR](https://img.shields.io/badge/for-MCDReforged%202-fac00f?style=for-the-badge&labelColor=3876a9)](https://mcdreforged.com/zh-CN)
 
@@ -42,6 +43,10 @@ Supports select Minecraft Java server distributions managed by MCDReforged.
 **→ Inside MC Server**
 - Players can use `!!view_image <url>` to view remote images manually
 
+**→ Chat Platform → MC Server (Remote Command Execution)**
+- Execute MC server RCON commands from the chat platform, results sent back to chat
+![](docs/images/preview-exec-rcon-command-at-chat-platform.png)
+
 ## Installation
 
 Place the plugin in MCDR's plugin directory and ensure dependencies are installed:
@@ -68,6 +73,11 @@ Auto-generated from the bundled `resources/` template at `config/mcdr_listener_w
 |-----|-------------|---------|
 | `host` | 🌐 WebSocket listen address | `0.0.0.0` |
 | `port` | 🔌 WebSocket listen port | `60601` |
+| `ws_token` | 🔑 WebSocket connection token (empty=no auth) ⚠️ default is for testing only | `"test12345"` |
+| `enable_remote_exec_command` | ⚡ Enable remote command execution | `false` |
+| `remote_exec_command_whitelist` | 🛡️ Allowed command prefixes (empty=allow all) | `[]` |
+| `remote_exec_command_timeout_sec` | ⏱️ Command execution timeout (seconds) | `10` |
+| `remote_exec_result_max_length` | 📏 Max length of command result output | `4000` |
 | `cache_dir` | 📂 Image cache directory | `./cache/mcdr_listener_ws_server/images/` |
 | `image_max_side_length` | 📐 Max side length of displayed images | `64` |
 | `image_duration_sec` | ⏱️ Image display duration (seconds) | `10` |
@@ -164,3 +174,22 @@ The server will respond with the execution result:
     "result": "..."
 }
 ```
+
+> ⚠️ **Prerequisite: Enable RCON**
+>
+> The remote command execution feature relies on the Minecraft server's RCON interface. Before using it, ensure:
+>
+> 1. **Minecraft Server**: Enable RCON in `server.properties`
+>    ```properties
+>    enable-rcon=true
+>    rcon.port=25575
+>    rcon.password=your_rcon_password
+>    ```
+> 2. **MCDR Main Config**: Configure RCON in MCDR's `config.yml` (the plugin executes commands via MCDR's RCON interface)
+>    ```yaml
+>    rcon:
+>      enable: true
+>      address: 127.0.0.1
+>      port: 25575
+>      password: your_rcon_password
+>    ```

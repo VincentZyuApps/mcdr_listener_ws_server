@@ -1,60 +1,83 @@
 import re
+from mcdreforged.api.all import ServerInterface
 
 
-def create_clickable_image_text(idx: int, url: str, summary: str = '图片') -> str:
-    display_url = url[:50] + '...' if len(url) > 50 else url
-    summary_escaped = summary.replace("'", "\\'").replace('\n', '\\n')
+def create_clickable_image_text(
+    server: ServerInterface, idx: int, url: str, summary: str = "图片"
+) -> str:
+    from .translator import tr
+
+    display_url = url[:50] + "..." if len(url) > 50 else url
+    summary_escaped = summary.replace("'", "\\'").replace("\n", "\\n")
     display_url_escaped = display_url.replace("'", "\\'")
     url_escaped = url.replace("'", "\\'")
 
     return (
-        '{text:"[图片#' + str(idx) + ']",'
+        '{text:"' + str(tr(server, "image.entry_label_hash", idx=idx)) + '",'
         'color:"gold",'
-        'bold:true,'
-        'underlined:true,'
-        'hover_event:{action:"show_text",value:\'点击查看图片\\n' + summary_escaped + '\\n\\nURL: ' + display_url_escaped + '\'},'
-        'click_event:{action:"suggest_command",command:"!!view_image ' + url_escaped + '"}}'
+        "bold:true,"
+        "underlined:true,"
+        'hover_event:{action:"show_text",value:\''
+        + str(tr(server, "image.click_hint"))
+        + "\\n"
+        + summary_escaped
+        + "\\n\\n"
+        + str(tr(server, "image.url_label"))
+        + display_url_escaped
+        + "'},"
+        'click_event:{action:"suggest_command",command:"!!view_image '
+        + url_escaped
+        + '"}}'
     )
 
 
 def sanitize_for_tellraw(text: str) -> str:
-    text = text.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ')
-    text = text.replace('\t', ' ')
-    text = ''.join(c if (ord(c) >= 0x20 and ord(c) != 0x7F) else ' ' for c in text)
-    text = re.sub(r' +', ' ', text)
+    text = text.replace("\r\n", " ").replace("\n", " ").replace("\r", " ")
+    text = text.replace("\t", " ")
+    text = "".join(c if (ord(c) >= 0x20 and ord(c) != 0x7F) else " " for c in text)
+    text = re.sub(r" +", " ", text)
     return text.strip()
 
 
-def replace_image_markers(message: str, images: list) -> str:
+def replace_image_markers(server: ServerInterface, message: str, images: list) -> str:
+    from .translator import tr
+
     message = sanitize_for_tellraw(message)
 
     if not images:
-        message_escaped = message.replace('\\', '\\\\').replace('"', '\\"')
+        message_escaped = message.replace("\\", "\\\\").replace('"', '\\"')
         return f'{{text:"{message_escaped}"}}'
 
-    image_map = {img['idx']: img for img in images}
-    pattern = r'<img:(\d+)>'
+    image_map = {img["idx"]: img for img in images}
+    pattern = r"<img:(\d+)>"
     parts = []
     last_end = 0
 
     for match in re.finditer(pattern, message):
         if match.start() > last_end:
-            text_before = message[last_end:match.start()]
+            text_before = message[last_end : match.start()]
             if text_before:
                 text_before = sanitize_for_tellraw(text_before)
-                text_before = text_before.replace('\\', '\\\\').replace('"', '\\"')
+                text_before = text_before.replace("\\", "\\\\").replace('"', '\\"')
                 parts.append(f'{{text:"{text_before}"}}')
 
         idx = int(match.group(1))
         if idx in image_map:
             img_info = image_map[idx]
-            parts.append(create_clickable_image_text(
-                idx,
-                img_info['url'],
-                img_info.get('summary', '图片')
-            ))
+            parts.append(
+                create_clickable_image_text(
+                    server,
+                    idx,
+                    img_info["url"],
+                    img_info.get("summary", str(tr(server, "image.default_summary"))),
+                )
+            )
         else:
-            parts.append(f'{{text:"[图片#{idx}]",color:"gray"}}')
+            parts.append(
+                '{text:"'
+                + str(tr(server, "image.entry_label_hash", idx=idx))
+                + '",color:"gray"}'
+            )
 
         last_end = match.end()
 
@@ -62,11 +85,11 @@ def replace_image_markers(message: str, images: list) -> str:
         text_after = message[last_end:]
         if text_after:
             text_after = sanitize_for_tellraw(text_after)
-            text_after = text_after.replace('\\', '\\\\').replace('"', '\\"')
+            text_after = text_after.replace("\\", "\\\\").replace('"', '\\"')
             parts.append(f'{{text:"{text_after}"}}')
 
     if not parts:
-        message_escaped = message.replace('\\', '\\\\').replace('"', '\\"')
+        message_escaped = message.replace("\\", "\\\\").replace('"', '\\"')
         return f'{{text:"{message_escaped}"}}'
 
-    return ','.join(parts)
+    return ",".join(parts)

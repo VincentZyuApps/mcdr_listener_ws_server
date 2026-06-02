@@ -18,3 +18,13 @@ mcdr_listener_ws_server:
     process_failed: "图片处理失败: {error}"
     rendering: "正在生成图片 ({width}x{height} = {pixel_count}像素)..."
     rendered: "图片已展示（{duration_sec}秒后消失）"
+    default_summary: "图片"
+    entry_label_hash: "[图片#{idx}]"
+  log:
+    write_failed: "日志记录失败: {error}"
+    read_failed: "日志读取失败: {error}"
+  remote_command:
+    disabled: "远程命令执行功能已被 MCDR 插件配置禁用（请在 config/mcdr_listener_ws_server/config.yml 中设置 enable_remote_exec_command: true）"
+    not_in_whitelist: "命令不在白名单中: {command}"
+    rcon_returned_none: "RCON 返回为空，请检查 Minecraft 服务器是否启用了 RCON（server.properties 中 enable-rcon=true）"
+    timeout: "命令执行超时（{timeout_sec}秒）"

@@ -1,4 +1,5 @@
 """图片处理模块 - 下载、转换、展示图片"""
+
 from urllib.parse import urlparse
 from mcdreforged.api.all import *
 
@@ -10,11 +11,11 @@ from .translator import tr
 
 class ImageHandler:
     """处理图片下载、转换和展示"""
-    
+
     def __init__(
         self,
         server: PluginServerInterface,
-        cache_dir='./cache/mcdr_listener_ws_server/images/',
+        cache_dir="./cache/mcdr_listener_ws_server/images/",
         image_max_side_length: int = 64,
         image_duration_sec: int = 10,
         image_cache_ttl_sec: int = 180,
@@ -32,51 +33,49 @@ class ImageHandler:
             ttl_sec=image_cache_ttl_sec,
             host_whitelist=image_host_whitelist,
         )
-        self.image_renderer = ImageRenderer(server, image_max_side_length=image_max_side_length, image_duration_sec=image_duration_sec)
+        self.image_renderer = ImageRenderer(
+            server,
+            image_max_side_length=image_max_side_length,
+            image_duration_sec=image_duration_sec,
+        )
 
     def _make_image_blocked_message(self, host: str) -> RTextBase:
         return RTextList(
-            RText('[', RColor.dark_red),
-            RText('Blocked', RColor.red, RStyle.bold),
-            RText('] ', RColor.dark_red),
-            tr(self.server, 'image.blocked_by_whitelist_prefix').set_color(RColor.red),
+            RText("[", RColor.dark_red),
+            RText("Blocked", RColor.red, RStyle.bold),
+            RText("] ", RColor.dark_red),
+            tr(self.server, "image.blocked_by_whitelist_prefix").set_color(RColor.red),
             RText(host, RColor.gold, RStyle.bold),
         )
-    
-    def process_message_with_images(self, message: str, images: list, player_name: str) -> str:
-        """
-        处理包含图片标记的消息，替换为可点击文本
-        
-        Args:
-            message: 原始消息文本，包含 <img:0>, <img:1> 等标记
-            images: 图片信息列表 [{'idx': 0, 'url': '...', 'summary': '...'}, ...]
-            player_name: 玩家名称
-        
-        Returns:
-            原始消息文本。图片标记的实际替换在广播发送阶段完成
-        """
+
+    def process_message_with_images(
+        self, message: str, images: list, player_name: str
+    ) -> str:
         if not images:
             return message
-        
-        # 存储该玩家的图片信息
+
         if player_name not in self.pending_images:
             self.pending_images[player_name] = {}
-        
+
         for img_info in images:
-            idx = img_info.get('idx', 0)
-            url = img_info.get('url', '')
+            idx = img_info.get("idx", 0)
+            url = img_info.get("url", "")
             self.pending_images[player_name][idx] = {
-                'url': url,
-                'summary': img_info.get('summary', '图片')
+                "url": url,
+                "summary": img_info.get(
+                    "summary", str(tr(self.server, "image.default_summary"))
+                ),
             }
-        
+
         # 图片标记的实际替换在发送阶段统一处理
         return message
-    
-    def register_image(self, player_name: str, idx: int, url: str, summary: str = '图片'):
+
+    def register_image(
+        self, player_name: str, idx: int, url: str, summary: str = "图片"
+    ):
         """
         为玩家注册图片信息
-        
+
         Args:
             player_name: 玩家名称
             idx: 图片索引
@@ -85,57 +84,70 @@ class ImageHandler:
         """
         if player_name not in self.pending_images:
             self.pending_images[player_name] = {}
-        
-        self.pending_images[player_name][idx] = {
-            'url': url,
-            'summary': summary
-        }
-        self.server.logger.info(f'【 Image registered 】 {player_name} #{idx}: {url[:50]}...')
+
+        self.pending_images[player_name][idx] = {"url": url, "summary": summary}
+        self.server.logger.info(
+            f"【 Image registered 】 {player_name} #{idx}: {url[:50]}..."
+        )
 
     def replace_image_markers(self, message: str, images: list) -> str:
-        return replace_image_markers(message, images)
-    
+        return replace_image_markers(self.server, message, images)
+
     def view_image(self, player_name: str, url: str):
         """
         玩家点击查看图片
-        
+
         Args:
             player_name: 玩家名称
             url: 图片URL
         """
-        
+
         # 发送加载提示
-        self.server.tell(player_name, tr(self.server, 'image.loading'))
-        self.server.logger.info(f'【 Image request 】 {player_name}: {url}')
-        
+        self.server.tell(player_name, tr(self.server, "image.loading"))
+        self.server.logger.info(f"【 Image request 】 {player_name}: {url}")
+
         # 异步下载和展示图片
         def download_and_display():
             try:
                 # 下载图片
                 image_data = self.download_image(url)
                 if not image_data:
-                    self.server.tell(player_name, tr(self.server, 'image.download_failed'))
+                    self.server.tell(
+                        player_name, tr(self.server, "image.download_failed")
+                    )
                     return
-                
+
                 image = self.image_renderer.open_image(image_data)
                 if self.image_renderer.last_open_was_animated:
-                    self.server.tell(player_name, tr(self.server, 'image.gif_first_frame'))
+                    self.server.tell(
+                        player_name, tr(self.server, "image.gif_first_frame")
+                    )
                 self.image_renderer.display_image_to_player(player_name, image)
-                
+
             except Exception as e:
-                self.server.logger.error(f'【 Image error 】 failed to process image: {e}')
+                self.server.logger.error(
+                    f"【 Image error 】 failed to process image: {e}"
+                )
                 import traceback
+
                 self.server.logger.error(traceback.format_exc())
-                if isinstance(e, ValueError) and 'Image host is not in whitelist:' in str(e):
-                    host = urlparse(url).hostname or 'unknown'
-                    self.server.tell(player_name, self._make_image_blocked_message(host))
+                if isinstance(
+                    e, ValueError
+                ) and "Image host is not in whitelist:" in str(e):
+                    host = urlparse(url).hostname or "unknown"
+                    self.server.tell(
+                        player_name, self._make_image_blocked_message(host)
+                    )
                 else:
-                    self.server.tell(player_name, tr(self.server, 'image.process_failed', error=str(e)))
-        
+                    self.server.tell(
+                        player_name,
+                        tr(self.server, "image.process_failed", error=str(e)),
+                    )
+
         # 在新线程中执行
         import threading
+
         threading.Thread(target=download_and_display, daemon=True).start()
-    
+
     def download_image(self, url: str, timeout=10) -> bytes:
         return self.image_cache.download_image(url, timeout=timeout)
-    

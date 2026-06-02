@@ -18,3 +18,13 @@ mcdr_listener_ws_server:
     process_failed: "Failed to process image: {error}"
     rendering: "Rendering image ({width}x{height} = {pixel_count} pixels)..."
     rendered: "Image displayed (will disappear after {duration_sec}s)"
+    default_summary: "Image"
+    entry_label_hash: "[Image#{idx}]"
+  log:
+    write_failed: "Failed to write log: {error}"
+    read_failed: "Failed to read log: {error}"
+  remote_command:
+    disabled: "Remote command execution is disabled by MCDR plugin config (set enable_remote_exec_command: true in config/mcdr_listener_ws_server/config.yml)"
+    not_in_whitelist: "Command not in whitelist: {command}"
+    rcon_returned_none: "RCON returned empty result, please check if RCON is enabled on the Minecraft server (enable-rcon=true in server.properties)"
+    timeout: "Command execution timed out ({timeout_sec}s)"

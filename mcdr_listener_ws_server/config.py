@@ -11,6 +11,21 @@ class PluginConfig(Serializable):
     # WebSocket listen port
     port: int = 60601
 
+    # WebSocket connection token, empty string means no verification
+    ws_token: str = ""
+
+    # Enable remote command execution
+    enable_remote_exec_command: bool = False
+
+    # Allowed command prefixes, empty list means no restriction
+    remote_exec_command_whitelist: list[str] = []
+
+    # Command execution timeout in seconds
+    remote_exec_command_timeout_sec: int = 10
+
+    # Maximum length of command result
+    remote_exec_result_max_length: int = 4000
+
     # Image cache directory, relative or absolute
     cache_dir: str = "./cache/mcdr_listener_ws_server/images/"
 

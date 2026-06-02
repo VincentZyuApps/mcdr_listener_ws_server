@@ -53,7 +53,11 @@ class EventLogger:
                 json.dump(existing_data, f, indent=2)
 
         except Exception as e:
-            self.server.logger.error(f"日志记录失败: {str(e)}")
+            from .translator import tr
+
+            self.server.logger.error(
+                str(tr(self.server, "log.write_failed", error=str(e)))
+            )
 
     @classmethod
     def parse_date_str(cls, date_str: str) -> datetime:
@@ -81,7 +85,11 @@ class EventLogger:
                 return json.load(f)
 
         except Exception as e:
-            self.server.logger.error(f"日志读取失败: {str(e)}")
+            from .translator import tr
+
+            self.server.logger.error(
+                str(tr(self.server, "log.read_failed", error=str(e)))
+            )
             raise
 
 

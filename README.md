@@ -2,7 +2,8 @@
 
 # mcdr_listener_ws_server
 
-[🇬🇧 English](README.en-us.md)
+> **[📖 中文](README.md)**
+> **[📖 English](README.en-us.md)**
 
 [![MCDR](https://img.shields.io/badge/for-MCDReforged%202-fac00f?style=for-the-badge&labelColor=3876a9)](https://mcdreforged.com/zh-CN)
 
@@ -42,6 +43,10 @@
 **→ MC 服务器内**
 - 玩家可用 `!!view_image <url>` 命令手动查看远程图片
 
+**→ 聊天平台 → MC 服务器（远程命令执行）**
+- 通过聊天平台远程执行 MC 服务器 RCON 命令，结果回传至聊天平台
+![](docs/images/preview-exec-rcon-command-at-chat-platform.png)
+
 ## 安装
 
 将插件放入 MCDR 插件目录，确保依赖已安装：
@@ -68,9 +73,14 @@ uv pip install -r requirements.txt
 |--------|------|--------|
 | `host` | 🌐 监听地址 | `0.0.0.0` |
 | `port` | 🔌 监听端口 | `60601` |
+| `ws_token` | 🔑 WebSocket 连接 Token（空字符串=不校验）⚠️ 默认值仅用于测试 | `"test12345"` |
+| `enable_remote_exec_command` | ⚡ 启用远程命令执行 | `false` |
+| `remote_exec_command_whitelist` | 🛡️ 远程命令前缀白名单（空列表=不限制） | `[]` |
+| `remote_exec_command_timeout_sec` | ⏱️ 命令执行超时（秒） | `10` |
+| `remote_exec_result_max_length` | 📏 返回结果最大字符数，超长截断 | `4000` |
 | `cache_dir` | 📂 图片缓存目录 | `./cache/mcdr_listener_ws_server/images/` |
 | `image_max_side_length` | 📐 图片最大边长 | `64` |
-| `image_duration_sec` | ⏱️ 图片展示时长 | `10` |
+| `image_duration_sec` | ⏱️ 图片展示时长（秒） | `10` |
 | `image_cache_ttl_sec` | 🧹 图片缓存保留时长（秒） | `180` |
 | `image_host_whitelist` | 🛡️ 图片域名白名单 | `multimedia.nt.qq.com.cn`, `gxh.vip.qq.com` |
 
@@ -164,3 +174,22 @@ uv pip install -r requirements.txt
     "result": "..."
 }
 ```
+
+> ⚠️ **前置条件：启用 RCON**
+>
+> 远程命令执行功能依赖 Minecraft 服务器的 RCON 接口。使用前请确保：
+>
+> 1. **Minecraft 服务器**：在 `server.properties` 中启用 RCON
+>    ```properties
+>    enable-rcon=true
+>    rcon.port=25575
+>    rcon.password=你的RCON密码
+>    ```
+> 2. **MCDR 主配置文件**：在 MCDR 的 `config.yml` 中配置 RCON（插件通过 MCDR 的 RCON 接口执行命令）
+>    ```yaml
+>    rcon:
+>      enable: true
+>      address: 127.0.0.1
+>      port: 25575
+>      password: 你的RCON密码
+>    ```
