@@ -50,7 +50,7 @@ check ──→ pack ──→ release ──→ sync-gitee-release
   │         │         │              │
   │         │         │              ├─ 下载 GitHub Release 附件
   │         │         │              ├─ 通过 Gitee API 创建 Release
-  │         │         │              └─ 上传 .mcdr 到 Gitee
+  │         │         │              └─ 上传 .mcdr 到 【Gitee码云】
   │         │         │
   │         │         └─ 下载构建产物
   │         │            删除旧的 release/tag
@@ -60,58 +60,44 @@ check ──→ pack ──→ release ──→ sync-gitee-release
   │         └─ python -m mcdreforged pack
   │            上传 .mcdr artifact
   │
-  └─→ sync-gitee-code（与 check 并行，每次 push 触发）
-       通过 hub-mirror-action 镜像所有分支/标签到 Gitee
+  └─ 代码同步到 【Gitee码云】 → (参见独立的 sync-gitee-code.yml, 独立 workflow)
 ```
 
 ### 流水线流程图
 
 ```mermaid
 flowchart TB
-    subgraph check["check"]
-        C1[解析 commit 信息]
-        C2[从 mcdreforged.plugin.json 提取版本号]
-    end
-    
-    subgraph syncCode["sync-gitee-code"]
-        SC1[镜像到 Gitee]
-    end
-    
-    subgraph pack["pack"]
-        P1[python -m mcdreforged pack]
-        P2[上传 .mcdr artifact]
-    end
-    
-    subgraph release["release"]
-        R1[下载构建产物]
-        R2[删除旧 release/tag]
-        R3[创建 GitHub Release]
-        R4[上传 .mcdr 文件]
+    subgraph build["build.yml"]
+        direction TB
+        C1[解析 commit 信息] --> P1
+        P1[python -m mcdreforged pack] --> P2[上传 .mcdr artifact]
+        P2 --> R1[下载构建产物]
+        R1 --> R2[删除旧 release/tag]
+        R2 --> R3[创建 GitHub Release]
+        R3 --> R4[上传 .mcdr 文件]
+        R4 --> SR1[下载 GitHub Release 附件]
+        SR1 --> SR2[【Gitee码云】创建 Release]
+        SR2 --> SR3[【Gitee码云】上传 .mcdr]
     end
 
-    subgraph syncRelease["sync-gitee-release"]
-        SR1[下载 GitHub Release 附件]
-        SR2[创建 Gitee Release]
-        SR3[上传 .mcdr 到 Gitee]
+    subgraph syncCode["sync-gitee-code.yml (独立 workflow)"]
+        SC1[【Gitee码云】镜像代码]
     end
 
-    C1 --> C2
-    C1 -."每次 push".-> SC1
-    C2 --> P1
-    P1 --> P2
-    P2 --> R1
-    R1 --> R2 --> R3 --> R4
-    R4 --> SR1
-    SR1 --> SR2 --> SR3
+    C1 -. "每次 push 触发" .-> SC1
+
+    classDef gitee fill:#e74c3c,stroke:#c0392b,color:#fff
+    class SR2,SR3,SC1 gitee
 ```
 
 ## 🔄 Gitee 同步
 
 自动将代码镜像到 [Gitee](https://gitee.com/vincent-zyu/mcdr_listener_ws_server)（国内 GitHub 替代，方便大陆用户访问）。
 
-### sync-gitee-code — 代码镜像
+### sync-gitee-code — 代码镜像（独立 workflow）
 
-**每次 push 时运行**（与 `check` job 并行）：
+由 `.github/workflows/sync-gitee-code.yml` 独立管理，**与 `build.yml` 解耦**：
+- 每次 push 到 `main` 或推送 `v*` tag 时自动运行
 - 使用 [Yikun/hub-mirror-action](https://github.com/Yikun/hub-mirror-action) 镜像所有分支、标签和提交
 - 自动触发，无需关键词
 

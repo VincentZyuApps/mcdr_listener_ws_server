@@ -1,0 +1,26 @@
+name: Sync Code to Gitee
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  sync-gitee-code:
+    name: 【Gitee码云】Sync Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mirror to Gitee
+        uses: Yikun/hub-mirror-action@v1.5
+        continue-on-error: true
+        with:
+          src: github/VincentZyuApps
+          dst: gitee/vincent-zyu
+          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
+          dst_token: ${{ secrets.GITEE_TOKEN }}
+          static_list: "mcdr_listener_ws_server"
+          force_update: true
+          debug: true
