@@ -158,7 +158,7 @@ jobs:
           COMMIT_HASH="[\`${GITHUB_SHA::7}\`](https://github.com/${REPO}/commit/${GITHUB_SHA})"
           NOTES="${NOTES//__COMMIT_HASH__/$COMMIT_HASH}"
 
-          COMMIT_LOG=$(git log "${PREV_TAG:+${PREV_TAG}..}HEAD" --pretty=format:"- %s (\`%h\`)" --reverse)
+          COMMIT_LOG=$(git log "${PREV_TAG:+${PREV_TAG}..}HEAD" --format="%B" --reverse | sed 's/^/> /')
           NOTES="${NOTES//__COMMIT_LOG__/$COMMIT_LOG}"
 
           echo "$NOTES" > release_notes.md
