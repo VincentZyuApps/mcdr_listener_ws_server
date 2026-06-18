@@ -5,6 +5,8 @@
 > **[📖 中文](README.md)**
 > **[📖 English](README.en-us.md)**
 
+> 📦 **[Build Workflow](.github/workflows/build.md)** — Release process and build configuration
+
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/VincentZyuApps/mcdr_listener_ws_server)
 [![Gitee](https://img.shields.io/badge/Gitee-C71D23?style=for-the-badge&logo=gitee&logoColor=white)](https://gitee.com/vincent-zyu/mcdr_listener_ws_server)
 
