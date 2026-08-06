@@ -10,37 +10,28 @@ CI/CD 流水线完全由 **commit 信息中的关键词** 驱动。推送到 `ma
 
 | git行为 | 打包 .mcdr | GitHub Release | Gitee 同步 |
 |----------------------|:---:|:---:|:---:|
-| 推送的commit信息中含有`build action` | ✅ | ❌ | ❌ |
-| 推送的commit信息中含有`build release` | ✅ | ✅ | ✅ |
-| 推送形如`v*`格式的tag（如 `vx.y.z`） | ✅ | ✅ | ✅ |
+| 推送的commit信息中含有`build-action` | ✅ | ❌ | ❌ |
+| 推送的commit信息中含有`build-release` | ✅ | ✅ | ✅ |
 
 ### 使用示例
 
 ```bash
 # 仅打包测试（不发布）
-git commit -m "feat: 添加新功能 build action"
+git commit -m "feat: 添加新功能 build-action"
 
 # 打包并发布到 GitHub + Gitee
-git commit -m "feat: 发布新版本 build release"
-
-# 推送 tag 自动打包+发布（无需关键词）
-git tag vx.y.z
-git push github vx.y.z
+git commit -m "feat: 发布新版本 build-release"
 ```
 
 ### 🚀 发版小连招
 
 ```bash
-# 1. 提交代码
+# 1. 提交代码（commit message 包含 build-release 会自动触发打包+发布）
 git add -A
-git commit -m "vx.y.z-beta.w more commit messages..."
+git commit -m "v0.6.4 more commit messages... build-release"
 git push github main
 
-# 2. 打 tag（版本号与 mcdreforged.plugin.json 一致）
-git tag vx.y.z-beta.w
-
-# 3. 推 tag → 自动触发 workflow 打包 + 发布 Release
-git push github vx.y.z-beta.w
+# 2. 完成！等待 GitHub Actions 自动打包 + 发布 Release + 同步 Gitee
 ```
 
 ## 📦 流水线阶段

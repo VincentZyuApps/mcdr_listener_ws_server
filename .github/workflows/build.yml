@@ -3,7 +3,6 @@ name: Build & Release
 on:
   push:
     branches: [main]
-    tags: ['v*']
   pull_request:
     branches: [main]
 
@@ -50,19 +49,20 @@ jobs:
           BUILD=false
           RELEASE=false
 
-          # Only build action and build release
-          if echo "$MSG" | grep -qi "build release"; then
+          # Only build-action and build-release
+          if echo "$MSG" | grep -qi "build-release"; then
             BUILD=true
             RELEASE=true
-          elif echo "$MSG" | grep -qi "build action"; then
+          elif echo "$MSG" | grep -qi "build-action"; then
             BUILD=true
           fi
 
           # Tag push: auto release
-          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            BUILD=true
-            RELEASE=true
-          fi
+          # (deprecated: tag push no longer triggers this workflow)
+          # if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+          #   BUILD=true
+          #   RELEASE=true
+          # fi
 
           echo "should_build=$BUILD"     >> "$GITHUB_OUTPUT"
           echo "should_release=$RELEASE" >> "$GITHUB_OUTPUT"
