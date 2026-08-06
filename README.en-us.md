@@ -11,6 +11,7 @@
 [![Gitee](https://img.shields.io/badge/Gitee-C71D23?style=for-the-badge&logo=gitee&logoColor=white)](https://gitee.com/vincent-zyu/mcdr_listener_ws_server)
 
 [![MCDR](https://img.shields.io/badge/for-MCDReforged%202-fac00f?style=for-the-badge&labelColor=3876a9&logo=python&logoColor=white)](https://mcdreforged.com/zh-CN)
+[![Minecraft Java Edition](https://img.shields.io/badge/for-Minecraft_Java_Edition-2A5E38?style=for-the-badge&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI%2BCjxyZWN0IHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iIzVmYmY0YSIvPgo8cmVjdCB4PSIzIiB5PSIzIiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiBmaWxsPSIjMDAwIi8%2BCjxyZWN0IHg9IjEwIiB5PSIzIiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiBmaWxsPSIjMDAwIi8%2BCjxyZWN0IHg9IjYiIHk9IjYiIHdpZHRoPSI0IiBoZWlnaHQ9IjMiIGZpbGw9IiMwMDAiLz4KPHJlY3QgeD0iNSIgeT0iOSIgd2lkdGg9IjIiIGhlaWdodD0iNCIgZmlsbD0iIzAwMCIvPgo8cmVjdCB4PSI5IiB5PSI5IiB3aWR0aD0iMiIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIi8%2BCjxyZWN0IHg9IjciIHk9IjkiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiMwMDAiLz4KPC9zdmc%2B&labelColor=6B4E2E)](https://www.minecraft.net/zh-hans)
 
 [![QQ群](https://img.shields.io/badge/QQ群-1085190201-12B7F5?style=flat-square&logo=qq&logoColor=white)](https://qm.qq.com/q/4vjto4V7Di)
 
@@ -163,6 +164,8 @@ After first load, the default config template is automatically extracted from `r
 | `image_duration_sec` | ⏱️ Image display duration (seconds) | `10` |
 | `image_cache_ttl_sec` | 🧹 Image cache TTL (seconds) | `180` |
 | `image_host_whitelist` | 🛡️ Image domain whitelist, each domain can have its own proxy (empty = direct, proxy address = use proxy) | `multimedia.nt.qq.com.cn`(direct), `gxh.vip.qq.com`(direct), `cdn.discordapp.com`(via proxy), `media.discordapp.net`(via proxy) |
+| `view_image_permission` | 🎮 Permission level for !!view_image (`0`=no restriction) | `0` |
+| `view_image_player_whitelist` | 🎮 Player whitelist for !!view_image (`[]`=no restriction) | `[]` |
 
 > For local testing (running a WS client locally to simulate a chat platform), add `127.0.0.1` to `image_host_whitelist` in `config/mcdr_listener_ws_server/config.yml`:
 > ```yaml
@@ -175,6 +178,15 @@ After first load, the default config template is automatically extracted from `r
 >     proxy: http://127.0.0.1:7890
 >   - host: 127.0.0.1
 > ```
+> 
+> **!!view_image permission logic (4 combinations)**:
+> 
+> | Condition | Behavior |
+> |-----------|----------|
+> | Only `view_image_player_whitelist` is non-empty | Check if player is in whitelist, deny if not |
+> | Only `view_image_permission > 0` | Check if player's MCDR permission level meets requirement, deny if not |
+> | Both are configured | **Pass if either condition is met** (whitelist OR permission level) |
+> | Both are empty/default | **All players can use** (default behavior) |
 
 ## Commands
 

@@ -17,7 +17,13 @@ class PluginConfig(Serializable):
     port: int = 60601
 
     # WebSocket connection token, empty string means no verification
-    ws_token: str = ""
+    ws_token: str = "test12345"
+
+    # Permission level required for !!view_image command. 0 means no restriction.
+    view_image_permission: int = 0
+
+    # Player whitelist for !!view_image command. Empty list means no restriction.
+    view_image_player_whitelist: list[str] = []
 
     strip_message_whitespace: bool = True
 

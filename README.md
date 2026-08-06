@@ -1,16 +1,17 @@
+> **[📖 中文 文档](README.md)**
+> **[📖 English Documentation](README.en-us.md)**
+
+> 📦 **[构建工作流文档](.github/workflows/build.md)** — 版本发布流程与构建配置
+
 ![mcdr_listener_ws_server](https://socialify.git.ci/VincentZyuApps/mcdr_listener_ws_server/image?custom_description=%F0%9F%93%A1%20%E7%BE%A4%E6%9C%8D%E4%BA%92%E9%80%9A%E7%BD%91%E5%85%B3%EF%BC%8C%E4%B8%8D%E6%AD%A2%E6%96%87%E5%AD%97%EF%BC%9A%E6%B8%B8%E6%88%8F%E4%BA%8B%E4%BB%B6%E4%B8%8E%E7%BE%A4%E6%B6%88%E6%81%AF%E5%8F%8C%E5%90%91%E4%BA%92%E9%80%9A%E3%80%81%E5%9B%BE%E7%89%87%E6%B6%88%E6%81%AF%E6%B8%B8%E6%88%8F%E5%86%85%E6%B8%B2%E6%9F%93%E3%80%81RCON%20%E8%BF%9C%E7%A8%8B%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C&description=1&font=JetBrains+Mono&forks=1&issues=1&language=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F63280128%3Fs%3D200%26v%3D4&name=1&owner=1&pattern=Plus&pulls=1&stargazers=1&theme=Auto)
 
 # mcdr_listener_ws_server
-
-> **[📖 中文](README.md)**
-> **[📖 English](README.en-us.md)**
-
-> 📦 **[构建工作流 / Build Workflow](.github/workflows/build.md)** — 版本发布流程与构建配置
 
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/VincentZyuApps/mcdr_listener_ws_server)
 [![Gitee](https://img.shields.io/badge/Gitee-C71D23?style=for-the-badge&logo=gitee&logoColor=white)](https://gitee.com/vincent-zyu/mcdr_listener_ws_server)
 
 [![MCDR](https://img.shields.io/badge/for-MCDReforged%202-fac00f?style=for-the-badge&labelColor=3876a9&logo=python&logoColor=white)](https://mcdreforged.com/zh-CN)
+[![Minecraft Java Edition](https://img.shields.io/badge/for-Minecraft_Java_Edition-2A5E38?style=for-the-badge&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI%2BCjxyZWN0IHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iIzVmYmY0YSIvPgo8cmVjdCB4PSIzIiB5PSIzIiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiBmaWxsPSIjMDAwIi8%2BCjxyZWN0IHg9IjEwIiB5PSIzIiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiBmaWxsPSIjMDAwIi8%2BCjxyZWN0IHg9IjYiIHk9IjYiIHdpZHRoPSI0IiBoZWlnaHQ9IjMiIGZpbGw9IiMwMDAiLz4KPHJlY3QgeD0iNSIgeT0iOSIgd2lkdGg9IjIiIGhlaWdodD0iNCIgZmlsbD0iIzAwMCIvPgo8cmVjdCB4PSI5IiB5PSI5IiB3aWR0aD0iMiIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIi8%2BCjxyZWN0IHg9IjciIHk9IjkiIHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiMwMDAiLz4KPC9zdmc%2B&labelColor=6B4E2E)](https://www.minecraft.net/zh-hans)
 
 [![QQ群](https://img.shields.io/badge/QQ群-1085190201-12B7F5?style=flat-square&logo=qq&logoColor=white)](https://qm.qq.com/q/4vjto4V7Di)
 
@@ -163,6 +164,8 @@ uv pip install -r requirements.txt
 | `image_duration_sec` | ⏱️ 图片展示时长（秒） | `10` |
 | `image_cache_ttl_sec` | 🧹 图片缓存保留时长（秒） | `180` |
 | `image_host_whitelist` | 🛡️ 图片域名白名单，每个域名可单独配置代理（空=直连，填代理地址=走代理） | `multimedia.nt.qq.com.cn`(直连), `gxh.vip.qq.com`(直连), `cdn.discordapp.com`(走代理), `media.discordapp.net`(走代理) |
+| `view_image_permission` | 🎮 !!view_image 所需权限等级（`0`=不限制） | `0` |
+| `view_image_player_whitelist` | 🎮 !!view_image 玩家白名单（`[]`=不限制） | `[]` |
 
 > 如需本地测试（本地起一个 WS 客户端模拟聊天平台接入），可在生成的配置文件 `config/mcdr_listener_ws_server/config.yml` 中将 `127.0.0.1` 加入 `image_host_whitelist`：
 > ```yaml
@@ -175,6 +178,15 @@ uv pip install -r requirements.txt
 >     proxy: http://127.0.0.1:7890
 >   - host: 127.0.0.1
 > ```
+> 
+> **!!view_image 权限判定逻辑（四种组合）**：
+> 
+> | 条件 | 行为 |
+> |------|------|
+> | 仅 `view_image_player_whitelist` 不为空 | 检查玩家是否在白名单中，不在则拒绝 |
+> | 仅 `view_image_permission > 0` | 检查玩家 MCDR 权限等级是否达标，不达标则拒绝 |
+> | 两者都配置 | **满足任一条件即可**（白名单 或 权限等级达标） |
+> | 两者都为空/默认 | **所有玩家可用**（默认行为） |
 
 ## 命令
 

@@ -4,6 +4,7 @@ mcdr_listener_ws_server:
   command:
     player_only: "This command can only be used by players"
     image_handler_not_initialized: "Image handler is not initialized"
+    no_permission: "You don't have permission to use this command"
   player:
     leave_broadcast: "Bye {player}"
   image:
